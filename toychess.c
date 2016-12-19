@@ -18,10 +18,10 @@ const uint64_t FILE_A = (uint64_t)0x8080808080808080;
 const uint64_t FILE_H = (uint64_t)0x0101010101010101;
 const uint64_t FILE_AB = (uint64_t)0xC0C0C0C0C0C0C0C0;
 const uint64_t FILE_GH = (uint64_t)0x0303030303030303;
-const uint64_t RANK_8 = (uint64_t)0xFF00000000000000;
+const uint64_t RANK_8 = (uint64_t)0x00000000000000FF;
 const uint64_t LOWEST_SQUARE = (uint64_t)0x0000000000000001;
 const uint64_t SQUARE_0 = (uint64_t)0x8000000000000000;
-const uint64_t EMPTY_ROW = (uint64_t)0x0000000000000000;
+const uint64_t EMPTY_BOARD = (uint64_t)0x0000000000000000;
 
 
 void print_board(int *board)
