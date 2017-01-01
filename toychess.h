@@ -27,6 +27,7 @@ void print_board(int * board);
 void new_pieces(int * board);
 char piece_letter(int piece);
 void populate_board( struct bitboard * board );
+void rotate_board_180( struct bitboard * board );
 int * to_8x8( struct bitboard * board );
 int population_count ( uint64_t bitboard );
 uint64_t occupied_squares( struct bitboard * board );
@@ -47,4 +48,3 @@ uint64_t sliding_attack( uint64_t (*slider)(uint64_t), uint64_t attackers, uint6
 uint64_t king_attacks(uint64_t kings, uint64_t allies);
 uint64_t knight_attacks(uint64_t knights, uint64_t allies);
 uint64_t pawn_attacks(uint64_t pawns, uint64_t allies);
-

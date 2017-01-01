@@ -101,9 +101,22 @@ void populate_board( struct bitboard * board )
     board->rooks = (uint64_t)0x8100000000000081;
     board->knights = (uint64_t)0x4200000000000042;
     board->bishops = (uint64_t)0x2400000000000024;
-    board->kings = (uint64_t)0x1000000000000010;
-    board->queens = (uint64_t)0x0800000000000008;
+    board->kings = (uint64_t)0x0800000000000008;
+    board->queens = (uint64_t)0x1000000000000010;
     board->whites = (uint64_t)0xFFFF000000000000;
+}
+
+
+void rotate_board_180( struct bitboard * board )
+{
+    /*rotate the entire board 180 degrees*/
+    board->pawns = rotate_180(board->pawns);
+    board->rooks = rotate_180(board->rooks);
+    board->knights = rotate_180(board->knights);
+    board->bishops = rotate_180(board->bishops);
+    board->kings = rotate_180(board->kings);
+    board->queens = rotate_180(board->queens);
+    board->whites = rotate_180(board->whites);
 }
 
 
@@ -312,7 +325,7 @@ uint64_t shift_w( uint64_t bitlayer )
 
 uint64_t rotate_180( uint64_t bitlayer )
 {
-    /* Adapted from 
+    /* Adapted from
      * https://graphics.stanford.edu/~seander/bithacks.html#BitReverseObvious
      */
     uint64_t reversed = bitlayer;

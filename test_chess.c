@@ -10,6 +10,7 @@ void test_rook_attacks();
 void test_knight_attacks();
 void test_queen_collisions();
 void test_rotate_180();
+void test_rotate_board();
 
 
 int main()
@@ -19,6 +20,7 @@ int main()
     test_knight_attacks();
     test_queen_collisions();
     test_rotate_180();
+    test_rotate_board();
     return 0;
 }
 
@@ -88,6 +90,30 @@ void test_rotate_180()
         sq_map(h1),
         "A8 has moved to H1"
     );
+}
+
+
+void test_rotate_board()
+{
+    /* rotate an entire board 180 degrees */
+    struct bitboard* testboard;
+    testboard = new_board();
+    populate_board(testboard);
+    rotate_board_180(testboard);
+    /* white queen should have moved to E8 */
+    assert_board_eq(
+        testboard->queens & testboard->whites,
+        sq_map(e8),
+        "White queen has moved to e8"
+    );
+    /* rotate the board back */
+    rotate_board_180(testboard);
+    assert_board_eq(
+        testboard->queens & testboard->whites,
+        sq_map(d1),
+        "White queen has moved back to d1"
+    );
+    free(testboard);
 }
 
 
