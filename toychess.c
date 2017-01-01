@@ -308,3 +308,20 @@ uint64_t shift_w( uint64_t bitlayer )
 {
     return (bitlayer & ~FILE_H) >> 1;
 }
+
+
+uint64_t rotate_180( uint64_t bitlayer )
+{
+    /* Adapted from 
+     * https://graphics.stanford.edu/~seander/bithacks.html#BitReverseObvious
+     */
+    uint64_t reversed = bitlayer;
+    uint64_t lsb = (uint64_t)0x01; /* cast to uint64 */
+    int bits_left = 63;
+    for (bitlayer >>= 1; bitlayer; bitlayer >>= 1) {
+        reversed <<= 1;
+        reversed |= bitlayer & lsb;
+        bits_left --;
+    }
+    return reversed << bits_left;
+}

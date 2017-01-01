@@ -9,6 +9,7 @@ void test_king_attacks();
 void test_rook_attacks();
 void test_knight_attacks();
 void test_queen_collisions();
+void test_rotate_180();
 
 
 int main()
@@ -17,6 +18,7 @@ int main()
     test_rook_attacks();
     test_knight_attacks();
     test_queen_collisions();
+    test_rotate_180();
     return 0;
 }
 
@@ -75,6 +77,16 @@ void test_queen_collisions()
         queen_attacks(queens, enemies, allies),
         attacks,
         "expected queen attacks when boxed in"
+    );
+}
+
+
+void test_rotate_180()
+{
+    assert_board_eq(
+        rotate_180(sq_map(a8)),
+        sq_map(h1),
+        "A8 has moved to H1"
     );
 }
 
