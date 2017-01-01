@@ -1,5 +1,14 @@
 #include<stdint.h>
 
+#define EMPTY 0
+#define PAWN 1
+#define KNIGHT 2
+#define BISHOP 3
+#define ROOK 4
+#define QUEEN 5
+#define KING 6
+#define WHITE 8
+
 enum squares {
     a1, b1, c1, d1, e1, f1, g1, h1,
     a2, b2, c2, d2, e2, f2, g2, h2,
@@ -48,3 +57,4 @@ uint64_t sliding_attack( uint64_t (*slider)(uint64_t), uint64_t attackers, uint6
 uint64_t king_attacks(uint64_t kings, uint64_t allies);
 uint64_t knight_attacks(uint64_t knights, uint64_t allies);
 uint64_t pawn_attacks(uint64_t pawns, uint64_t allies);
+uint64_t sq_bit(char file, int rank);

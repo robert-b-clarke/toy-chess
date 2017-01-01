@@ -11,6 +11,7 @@ void test_knight_attacks();
 void test_queen_collisions();
 void test_rotate_180();
 void test_rotate_board();
+void test_sq_bit();
 
 
 int main()
@@ -21,6 +22,7 @@ int main()
     test_queen_collisions();
     test_rotate_180();
     test_rotate_board();
+    test_sq_bit();
     return 0;
 }
 
@@ -114,6 +116,19 @@ void test_rotate_board()
         "White queen has moved back to d1"
     );
     free(testboard);
+}
+
+
+void test_sq_bit()
+{
+    /* Test that conversions of rank and file result in correct
+     * single bit being set
+     */
+    assert_board_eq(
+        sq_bit('f', 7),
+        sq_map(f7),
+        "f7 is f7"
+    );
 }
 
 

@@ -4,15 +4,6 @@
 #include "toychess.h"
 
 
-#define EMPTY 0
-#define PAWN 1
-#define KNIGHT 2
-#define BISHOP 3
-#define ROOK 4
-#define QUEEN 5
-#define KING 6
-#define WHITE 8
-
 /* const bitmasks for bitboard */
 const uint64_t FILE_A = (uint64_t)0x8080808080808080;
 const uint64_t FILE_H = (uint64_t)0x0101010101010101;
@@ -337,4 +328,17 @@ uint64_t rotate_180( uint64_t bitlayer )
         bits_left --;
     }
     return reversed << bits_left;
+}
+
+
+uint64_t sq_bit(char file, int rank)
+{
+    /*
+     * convert a rank and file into a bitmap with a single bit set
+     * file a-h (lower case), rank 1-8
+     */
+    int file_int = file - 97;
+    rank --;
+    int position = 8 * rank + file_int;
+    return SQUARE_0 >> position;
 }
