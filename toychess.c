@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdbool.h>
 #include <stdint.h>
 #include "toychess.h"
 
@@ -19,10 +20,11 @@ void print_board(int *board)
 {
     /* print a board to the terminal. expects 8x8 format, taking bottom right
      * as square 0 */
-    printf("\e[39m\e[49m");
-    printf(" ABCDEFGH\n");
     int file;
     int rank;
+    int piece;
+    printf("\e[39m\e[49m");
+    printf(" ABCDEFGH\n");
     for (rank=0; rank<8; rank++) {
         printf("\e[39m\e[49m");
         printf("%d", 8 - rank);
@@ -33,9 +35,8 @@ void print_board(int *board)
             } else {
                 printf("\e[46m");
             }
-            int piece;
             piece = board[63 - ((rank * 8) + (7-file))];
-            if (piece & WHITE) {
+            if ((piece & WHITE) != 0) {
                 printf("\e[97m");
             } else {
                 printf("\e[30m");
@@ -51,8 +52,6 @@ char piece_letter(int piece)
 {
     int uncoloured_piece = piece & ~WHITE;
     switch(uncoloured_piece) {
-        case EMPTY:
-            return ' ';
         case PAWN:
             return 'p';
         case KNIGHT:
@@ -65,23 +64,28 @@ char piece_letter(int piece)
             return 'Q';
         case KING:
             return 'K';
+        default:
+            return ' ';
     }
 }
 
 
-struct bitboard* new_board() 
+/*@out@*/ /*@null@*/ struct bitboard* new_board() 
 {
     struct bitboard* board = (struct bitboard* )malloc( sizeof(struct bitboard) );
-    /* intitialise everyhing to empty */
     uint64_t empty_row = (uint64_t)0x0000000000000000;
-    board->whites = empty_row;
-    board->moved = empty_row;
-    board->pawns = empty_row;
-    board->rooks = empty_row;
-    board->knights = empty_row;
-    board->bishops = empty_row;
-    board->kings = empty_row;
-    board->pawns = empty_row;
+    if (board) {
+        /* intitialise everyhing to empty */
+        board->whites = empty_row;
+        board->moved = empty_row;
+        board->pawns = empty_row;
+        board->rooks = empty_row;
+        board->knights = empty_row;
+        board->bishops = empty_row;
+        board->kings = empty_row;
+        board->pawns = empty_row;
+    }
+    return board;
 }
 
 
@@ -114,9 +118,13 @@ void rotate_board_180( struct bitboard * board )
 int * to_8x8( struct bitboard * board )
 {
     /* convert bit board into 8x8 hex format for display */
-    int *board_8x8 = malloc(sizeof(int) * 64);
     uint64_t target_piece = SQUARE_0;
     int i;
+    int *board_8x8 = malloc(sizeof(int) * 64);
+    if (!board_8x8) {
+        fprintf(stderr, "Out of memory\n");
+        exit(EXIT_FAILURE);
+    }
     for (i=0; i < 64; i++) {
         int piece = 0;
         /*target_piece = (uint64_t)0x01 << i;*/
@@ -321,7 +329,7 @@ uint64_t rotate_180( uint64_t bitlayer )
      */
     uint64_t reversed = bitlayer;
     uint64_t lsb = (uint64_t)0x01; /* cast to uint64 */
-    int bits_left = 63;
+    uint8_t bits_left = 63;
     for (bitlayer >>= 1; bitlayer; bitlayer >>= 1) {
         reversed <<= 1;
         reversed |= bitlayer & lsb;
@@ -337,8 +345,12 @@ uint64_t sq_bit(char file, int rank)
      * convert a rank and file into a bitmap with a single bit set
      * file a-h (lower case), rank 1-8
      */
-    int file_int = file - 97;
+    uint8_t position;
+    uint8_t file_int = (uint8_t)file - 97;
     rank --;
-    int position = 8 * rank + file_int;
-    return SQUARE_0 >> position;
+    position = 8 * (uint8_t)rank + file_int;
+    if (position < 64) {
+        return SQUARE_0 >> position;
+    }
+    return EMPTY_BOARD;
 }

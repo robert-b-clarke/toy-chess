@@ -31,7 +31,7 @@ struct bitboard {
     uint64_t moved;
 };
 
-struct bitboard* new_board();
+/*@out@*/ /*@null@*/ struct bitboard* new_board();
 void print_board(int * board);
 void new_pieces(int * board);
 char piece_letter(int piece);
