@@ -8,6 +8,7 @@ uint64_t sq_map(int location);
 void test_king_attacks();
 void test_rook_attacks();
 void test_knight_attacks();
+void test_pawn_attacks();
 void test_queen_collisions();
 void test_rotate_180();
 void test_rotate_board();
@@ -37,6 +38,18 @@ void test_king_attacks()
         king_attacks(kings, EMPTY_BOARD), 
         attacks, 
         "expected king attacks in open play"
+    );
+}
+
+
+void test_pawn_attacks()
+{
+    uint64_t pawns = sq_map(b2) | sq_map(c2);
+    uint64_t opponents = sq_map(c3) | sq_map(e3);
+    assert_board_eq(
+        pawn_attacks(pawns, opponents),
+        sq_map(c3),
+        "pawns can attack diagonally to enemy squaress"
     );
 }
 

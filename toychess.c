@@ -112,6 +112,7 @@ void rotate_board_180( struct bitboard * board )
     board->kings = rotate_180(board->kings);
     board->queens = rotate_180(board->queens);
     board->whites = rotate_180(board->whites);
+    board->moved = rotate_180(board->whites);
 }
 
 
@@ -248,11 +249,11 @@ uint64_t knight_attacks(uint64_t knights, uint64_t allies)
 }
 
 
-uint64_t pawn_attacks(uint64_t pawns, uint64_t allies)
+uint64_t pawn_attacks(uint64_t pawns, uint64_t enemies)
 {
-    /* attack to the ne or nw */
+    /* attack to the ne or nw, only where enemies present */
     uint64_t moves = shift_ne(pawns) | shift_nw(pawns);
-    return moves & ~allies;
+    return moves & enemies;
 }
 
 
