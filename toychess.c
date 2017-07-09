@@ -169,16 +169,11 @@ uint64_t occupied_squares( struct bitboard * board )
 }
 
 
-uint64_t pawn_moves( struct bitboard * board )
+uint64_t pawn_moves(uint64_t pawns, uint64_t enemies, uint64_t allies, uint64_t moved)
 {
-    /* pawn moves available in open play */
-    uint64_t occupied = occupied_squares(board);
-    uint64_t moved_pawns = board->pawns & board->whites & board->moved;
-    uint64_t unmoved_pawns = board->pawns & board->whites & ~board->moved;
-    /*move unmoved pawns and merge with moved*/
-    moved_pawns = moved_pawns | (((unmoved_pawns & ~RANK_8) << 8) & ~occupied);
-    moved_pawns = moved_pawns | (((moved_pawns & ~RANK_8) << 8) & ~occupied);
-    return moved_pawns;
+    uint64_t occupied = enemies | allies;
+    uint64_t moves = shift_n(pawns & ~moved) & ~occupied;
+    return shift_n(moves | pawns) & ~occupied;
 }
 
 

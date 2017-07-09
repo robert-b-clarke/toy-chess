@@ -9,6 +9,7 @@ void test_king_attacks();
 void test_rook_attacks();
 void test_knight_attacks();
 void test_pawn_attacks();
+void test_pawn_moves();
 void test_queen_collisions();
 void test_rotate_180();
 void test_rotate_board();
@@ -21,6 +22,8 @@ int main()
     test_rook_attacks();
     test_knight_attacks();
     test_queen_collisions();
+    test_pawn_moves();
+    test_pawn_attacks();
     test_rotate_180();
     test_rotate_board();
     test_sq_bit();
@@ -50,6 +53,29 @@ void test_pawn_attacks()
         pawn_attacks(pawns, opponents),
         sq_map(c3),
         "pawns can attack diagonally to enemy squaress"
+    );
+}
+
+
+void test_pawn_moves()
+{
+    uint64_t fresh_pawns = sq_map(a2);
+    uint64_t moved_pawns = sq_map(b3);
+    assert_board_eq(
+        pawn_moves(
+            fresh_pawns | moved_pawns,
+            EMPTY_BOARD,
+            EMPTY_BOARD,
+            moved_pawns
+        ),
+        sq_map(a3) | sq_map(a4) | sq_map(b4),
+        "Without obstacles pawns can move forward 1 or 2 spaces"
+    );
+    // test a collision
+    assert_board_eq(
+        pawn_moves(sq_map(a2), sq_map(a4), EMPTY_BOARD, EMPTY_BOARD),
+        sq_map(a3),
+        "Advance of pawn impeded by allied piece"
     );
 }
 
