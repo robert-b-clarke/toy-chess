@@ -58,3 +58,4 @@ uint64_t king_attacks(uint64_t kings, uint64_t allies);
 uint64_t knight_attacks(uint64_t knights, uint64_t allies);
 uint64_t pawn_attacks(uint64_t pawns, uint64_t allies);
 uint64_t sq_bit(char file, int rank);
+uint64_t extract_ls1b(uint64_t bitlayer, uint64_t *deleted_bit);
