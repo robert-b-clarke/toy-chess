@@ -14,7 +14,7 @@ void test_queen_collisions();
 void test_rotate_180();
 void test_rotate_board();
 void test_sq_bit();
-void test_extract_ls1b();
+void test_delete_ls1b();
 void test_bitscan();
 
 
@@ -29,7 +29,7 @@ int main()
     test_rotate_180();
     test_rotate_board();
     test_sq_bit();
-    test_extract_ls1b();
+    test_delete_ls1b();
     test_bitscan();
     return 0;
 }
@@ -175,12 +175,12 @@ void test_sq_bit()
 }
 
 
-void test_extract_ls1b()
+void test_delete_ls1b()
 {
     /* Test we can extract bits sequentially */
     uint64_t extracted_bit;
     uint64_t board = sq_map(f8) | sq_map(e3);
-    board = extract_ls1b(board, &extracted_bit);
+    board = delete_ls1b(board, &extracted_bit);
     assert_board_eq(
         board,
         sq_map(e3),
@@ -192,7 +192,7 @@ void test_extract_ls1b()
         "f8 has been allocated to extracted bit"
     );
     // extract another bit
-    board = extract_ls1b(board, &extracted_bit);
+    board = delete_ls1b(board, &extracted_bit);
     assert_board_eq(
         board,
         EMPTY_BOARD,

@@ -352,7 +352,7 @@ uint64_t sq_bit(char file, int rank)
 }
 
 
-uint64_t extract_ls1b(uint64_t bitlayer, uint64_t *deleted_bit)
+uint64_t delete_ls1b(uint64_t bitlayer, uint64_t *deleted_bit)
 {
     uint64_t without_ls1b = bitlayer & (bitlayer - 1);
     *deleted_bit = bitlayer ^ without_ls1b;
