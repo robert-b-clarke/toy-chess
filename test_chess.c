@@ -15,6 +15,7 @@ void test_rotate_180();
 void test_rotate_board();
 void test_sq_bit();
 void test_extract_ls1b();
+void test_bitscan();
 
 
 int main()
@@ -29,6 +30,7 @@ int main()
     test_rotate_board();
     test_sq_bit();
     test_extract_ls1b();
+    test_bitscan();
     return 0;
 }
 
@@ -201,6 +203,24 @@ void test_extract_ls1b()
         sq_map(e3),
         "e3 has been allocated to extracted bit"
     );
+}
+
+
+void test_bitscan()
+{
+    uint64_t board = 0x8000000000000000;
+    int i;
+    for(i=0; i<64; i++) {
+        int bitscan_result = bitscan(board >> i);
+        if(i != bitscan_result) {
+            fprintf(
+                stderr,
+                "FAIL: bitscan %d does not match offset %d\n",
+                bitscan_result, i
+            );
+            exit(1);
+        }
+    }
 }
 
 

@@ -358,3 +358,17 @@ uint64_t extract_ls1b(uint64_t bitlayer, uint64_t *deleted_bit)
     *deleted_bit = bitlayer ^ without_ls1b;
     return without_ls1b;
 }
+
+int bitscan ( uint64_t b )
+{
+    // do binary search, this method with the fixed bitmasks will only work
+    // for a single bit, not as a generic leading zero count
+    int pos = 32;
+    pos += (b & (uint64_t)0xFFFFFFFF00000000) ? -16 : 16;
+    pos += (b & (uint64_t)0xFFFF0000FFFF0000) ? -8 : 8;
+    pos += (b & (uint64_t)0xFF00FF00FF00FF00) ? -4 : 4;
+    pos += (b & (uint64_t)0xF0F0F0F0F0F0F0F0) ? -2 : 2;
+    pos += (b & (uint64_t)0XCCCCCCCCCCCCCCCC) ? -1 : 1;
+    if (b & (uint64_t)0XAAAAAAAAAAAAAAAA) return pos -1;
+    return pos;
+}
