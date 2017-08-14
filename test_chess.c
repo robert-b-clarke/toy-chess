@@ -16,6 +16,7 @@ void test_rotate_board();
 void test_sq_bit();
 void test_delete_ls1b();
 void test_bitscan();
+void test_fen_to_board();
 
 
 int main()
@@ -31,6 +32,7 @@ int main()
     test_sq_bit();
     test_delete_ls1b();
     test_bitscan();
+    test_fen_to_board();
     return 0;
 }
 
@@ -221,6 +223,15 @@ void test_bitscan()
             exit(1);
         }
     }
+}
+
+
+void test_fen_to_board()
+{
+    char fen[] = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
+    struct bitboard* testboard;
+    testboard = fen_to_board(fen);
+    print_board(to_8x8(testboard));
 }
 
 

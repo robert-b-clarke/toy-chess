@@ -32,6 +32,7 @@ struct bitboard {
 };
 
 /*@out@*/ /*@null@*/ struct bitboard* new_board();
+/*@out@*/ /*@null@*/ struct bitboard* fen_to_board(char *fen);
 void print_board(int * board);
 void new_pieces(int * board);
 char piece_letter(int piece);
@@ -60,3 +61,5 @@ uint64_t pawn_attacks(uint64_t pawns, uint64_t allies);
 uint64_t sq_bit(char file, int rank);
 uint64_t delete_ls1b(uint64_t bitlayer, uint64_t *deleted_bit);
 int bitscan( uint64_t b );
+int fen_to_piece(int fen_char);
+void add_piece_to_board(struct bitboard * board, int piece, uint64_t target);

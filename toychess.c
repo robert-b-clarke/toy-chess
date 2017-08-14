@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include <stdint.h>
+#include <ctype.h>
 #include "toychess.h"
 
 
@@ -371,4 +372,90 @@ int bitscan ( uint64_t b )
     pos += (b & (uint64_t)0XCCCCCCCCCCCCCCCC) ? -1 : 1;
     if (b & (uint64_t)0XAAAAAAAAAAAAAAAA) return pos -1;
     return pos;
+}
+
+
+struct bitboard* fen_to_board(char *fen){
+    uint64_t target;
+    struct bitboard* board;
+    board = new_board();
+    int rank = 7; // 0 indexed
+    int file = 0;
+    do {
+        // if alpha (rnbkqp/RNBKQP) move target west one place
+        // if / move east 8 and south 1
+        // if numeric 0-8 move west x places
+        if (*fen == 0x2F) {
+            rank--;
+            file = 0;
+        } else if (isdigit(*fen)){
+            int offset = (int)(*fen - 0x48);
+            file += offset;
+        } else {
+            target = SQUARE_0 >> ((rank * 8) + file);
+            add_piece_to_board(board, fen_to_piece(*fen), target);
+            file++;
+        }
+    } while(*fen++ != '\0' && !isspace(*fen));
+    return board;
+}
+
+
+int fen_to_piece(int fen_char)
+{
+    // accept a single char and convert to a nibble using piece constants
+    int piece;
+    switch(tolower(fen_char)) {
+        case 112:
+            piece = PAWN;
+            break;
+        case 114:
+            piece = ROOK;
+            break;
+        case 113:
+            piece = QUEEN;
+            break;
+        case 107:
+            piece = KING;
+            break;
+        case 98:
+            piece = BISHOP;
+            break;
+        case 110:
+            piece = KNIGHT;
+            break;
+    }
+    // set the white flag bit
+    if(isupper(fen_char)) piece |= WHITE;
+
+    return piece;
+}
+
+
+void add_piece_to_board(struct bitboard * board, int piece, uint64_t target)
+{
+    if(piece & WHITE) {
+        board->whites |= target;
+        piece = piece ^ WHITE;
+    }
+    switch(piece) {
+        case PAWN:
+            board->pawns |= target;
+            break;
+        case KNIGHT:
+            board->knights |= target;
+            break;
+        case BISHOP:
+            board->bishops |= target;
+            break;
+        case ROOK:
+            board->rooks |= target;
+            break;
+        case QUEEN:
+            board->queens |= target;
+            break;
+        case KING:
+            board->kings |= target;
+            break;
+    }
 }
