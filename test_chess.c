@@ -262,7 +262,7 @@ void test_fen_to_board()
     );
     assert_board_eq(
         testboard->queens,
-        (uint64_t)0x100000000000010,
+        (uint64_t)0x1000000000000010,
         "queens initialised correctly"
     );
     assert_board_eq(
