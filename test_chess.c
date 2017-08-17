@@ -71,15 +71,14 @@ void test_pawn_moves()
         pawn_moves(
             fresh_pawns | moved_pawns,
             EMPTY_BOARD,
-            EMPTY_BOARD,
-            moved_pawns
+            EMPTY_BOARD
         ),
         sq_map(a3) | sq_map(a4) | sq_map(b4),
         "Without obstacles pawns can move forward 1 or 2 spaces"
     );
     // test a collision
     assert_board_eq(
-        pawn_moves(sq_map(a2), sq_map(a4), EMPTY_BOARD, EMPTY_BOARD),
+        pawn_moves(sq_map(a2), sq_map(a4), EMPTY_BOARD),
         sq_map(a3),
         "Advance of pawn impeded by allied piece"
     );

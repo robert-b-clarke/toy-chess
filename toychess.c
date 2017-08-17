@@ -12,6 +12,7 @@ const uint64_t FILE_H = (uint64_t)0x0101010101010101;
 const uint64_t FILE_AB = (uint64_t)0xC0C0C0C0C0C0C0C0;
 const uint64_t FILE_GH = (uint64_t)0x0303030303030303;
 const uint64_t RANK_8 = (uint64_t)0x00000000000000FF;
+const uint64_t RANK_2 = (uint64_t)0x00FF000000000000;
 const uint64_t LOWEST_SQUARE = (uint64_t)0x0000000000000001;
 const uint64_t SQUARE_0 = (uint64_t)0x8000000000000000;
 const uint64_t EMPTY_BOARD = (uint64_t)0x0000000000000000;
@@ -170,10 +171,10 @@ uint64_t occupied_squares( struct bitboard * board )
 }
 
 
-uint64_t pawn_moves(uint64_t pawns, uint64_t enemies, uint64_t allies, uint64_t moved)
+uint64_t pawn_moves(uint64_t pawns, uint64_t enemies, uint64_t allies)
 {
     uint64_t occupied = enemies | allies;
-    uint64_t moves = shift_n(pawns & ~moved) & ~occupied;
+    uint64_t moves = shift_n(pawns & RANK_2) & ~occupied;
     return shift_n(moves | pawns) & ~occupied;
 }
 
