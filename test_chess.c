@@ -228,9 +228,49 @@ void test_bitscan()
 
 void test_fen_to_board()
 {
+    /*
+     * Test that a Forsyth-Edwards Notation game serialization can be unpacked
+     * into a board struct
+     */
     char fen[] = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
     struct bitboard* testboard;
     testboard = fen_to_board(fen);
+    assert_board_eq(
+        testboard->pawns,
+        (uint64_t)0x00FF00000000FF00,
+        "pawns initialised correctly"
+    );
+    assert_board_eq(
+        testboard->rooks,
+        (uint64_t)0x8100000000000081,
+        "rooks initialised correctly"
+    );
+    assert_board_eq(
+        testboard->knights,
+        (uint64_t)0x4200000000000042,
+        "knights initialised correctly"
+    );
+    assert_board_eq(
+        testboard->bishops,
+        (uint64_t)0x2400000000000024,
+        "bishops initialised correctly"
+    );
+    assert_board_eq(
+        testboard->kings,
+        (uint64_t)0x0800000000000008,
+        "kings initialised correctly"
+    );
+    assert_board_eq(
+        testboard->queens,
+        (uint64_t)0x100000000000010,
+        "queens initialised correctly"
+    );
+    assert_board_eq(
+        testboard->whites,
+        (uint64_t)0xFFFF000000000000,
+        "bishops initialised correctly"
+    );
+    // print out the board for good measure
     print_board(to_8x8(testboard));
 }
 

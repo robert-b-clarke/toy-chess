@@ -376,7 +376,10 @@ int bitscan ( uint64_t b )
 
 
 struct bitboard* fen_to_board(char *fen){
-    uint64_t target;
+    /*
+     * Parse a string of "Forsyth-Edwards Notation" game state and return a
+     * board struct
+     */
     struct bitboard* board;
     board = new_board();
     int rank = 7; // 0 indexed
@@ -389,14 +392,19 @@ struct bitboard* fen_to_board(char *fen){
             rank--;
             file = 0;
         } else if (isdigit(*fen)){
-            int offset = (int)(*fen - 0x48);
-            file += offset;
+            file += (*fen - 0x48);
         } else {
-            target = SQUARE_0 >> ((rank * 8) + file);
-            add_piece_to_board(board, fen_to_piece(*fen), target);
+            add_piece_to_board(
+                board,
+                fen_to_piece(*fen),
+                SQUARE_0 >> ((rank * 8) + file)
+            );
             file++;
         }
     } while(*fen++ != '\0' && !isspace(*fen));
+
+    // Currently we throw away the remainder of the FEN string
+    // Future support can be added for castling, en-passant, game clock etc
     return board;
 }
 
@@ -434,6 +442,7 @@ int fen_to_piece(int fen_char)
 
 void add_piece_to_board(struct bitboard * board, int piece, uint64_t target)
 {
+    // Add a piece nibble to a board
     if(piece & WHITE) {
         board->whites |= target;
         piece = piece ^ WHITE;
