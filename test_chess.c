@@ -4,6 +4,7 @@
 
 /* homebrew unit test stuff */
 int assert_board_eq(uint64_t a, uint64_t b, const char *message);
+int assert_true(bool condition, const char *message);
 uint64_t sq_map(int location);
 void test_king_attacks();
 void test_rook_attacks();
@@ -17,6 +18,7 @@ void test_sq_bit();
 void test_delete_ls1b();
 void test_bitscan();
 void test_fen_to_board();
+void test_in_check();
 
 
 int main()
@@ -33,6 +35,7 @@ int main()
     test_delete_ls1b();
     test_bitscan();
     test_fen_to_board();
+    test_in_check();
     return 0;
 }
 
@@ -274,6 +277,23 @@ void test_fen_to_board()
 }
 
 
+void test_in_check()
+{
+    char not_in_check[] = "8/8/8/8/2k5/8/8/QK6";
+    char check[] = "8/8/8/8/3k4/8/8/QK6";
+    // Test a board that is not in check
+    assert_true(
+        !in_check(fen_to_board(not_in_check)),
+        "Correctly detect board is not in check"
+    );
+    // Test a board that is in check and fail if we don't
+    assert_true(
+        in_check(fen_to_board(check)),
+        "Correctly detect board is in check"
+    );
+}
+
+
 int assert_board_eq(uint64_t a, uint64_t b, const char *message)
 {
     /* compare 2 64 bit bitboard layers and fail noisily if they don't
@@ -282,6 +302,19 @@ int assert_board_eq(uint64_t a, uint64_t b, const char *message)
     if (a != b) {
         fprintf(stderr, "FAIL: %s\n", message);
         printf("%d differences between boards\n", population_count(b ^ a));
+        exit(1);
+    }
+    return 1;
+}
+
+
+int assert_true(bool condition, const char *message)
+{
+    /*
+     * fail noisily if condition not true
+     */
+    if (!condition) {
+        fprintf(stderr, "FAIL: %s\n", message);
         exit(1);
     }
     return 1;
