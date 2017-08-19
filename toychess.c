@@ -393,7 +393,7 @@ struct bitboard* fen_to_board(char *fen){
             rank--;
             file = 0;
         } else if (isdigit(*fen)){
-            file += (*fen - 0x48);
+            file += (*fen - 0x30);
         } else {
             add_piece_to_board(
                 board,
