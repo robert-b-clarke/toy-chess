@@ -469,3 +469,20 @@ void add_piece_to_board(struct bitboard * board, int piece, uint64_t target)
             break;
     }
 }
+
+
+bool in_check(struct bitboard * board)
+{
+    uint64_t allies = occupied_squares(board) & board->whites;
+    uint64_t enemies = occupied_squares(board) & ~board->whites;
+    uint64_t attacks= pawn_attacks(board->pawns & board->whites, allies);
+    attacks |= rook_attacks(board->rooks & board->whites, enemies, allies);
+    attacks |= queen_attacks(board->queens & board->whites, enemies, allies);
+    attacks |= bishop_attacks(board->bishops & board->whites, enemies, allies);
+    attacks |= king_attacks(board->bishops & board->whites, allies);
+    if (attacks & (board->kings & ~board->whites)) {
+        return true;
+    } else {
+        return false;
+    }
+}

@@ -63,3 +63,4 @@ uint64_t delete_ls1b(uint64_t bitlayer, uint64_t *deleted_bit);
 int bitscan( uint64_t b );
 int fen_to_piece(int fen_char);
 void add_piece_to_board(struct bitboard * board, int piece, uint64_t target);
+bool in_check(struct bitboard * board);
