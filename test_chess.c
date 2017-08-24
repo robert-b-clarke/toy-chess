@@ -19,6 +19,7 @@ void test_delete_ls1b();
 void test_bitscan();
 void test_fen_to_board();
 void test_in_check();
+void test_escape_check();
 
 
 int main()
@@ -36,6 +37,7 @@ int main()
     test_bitscan();
     test_fen_to_board();
     test_in_check();
+    test_escape_check();
     return 0;
 }
 
@@ -317,6 +319,19 @@ void test_in_check()
     );
 }
 
+void test_escape_check()
+{
+    char king_flees[] = "8/8/8/8/3K4/8/8/qk6";
+    char king_trapped[] = "1k6/8/6r1/8/4b3/8/7P/6RK";
+    assert_true(
+        can_escape_check(fen_to_board(king_flees)),
+        "correctly determine our king can flee check"
+    );
+    assert_true(
+        !can_escape_check(fen_to_board(king_trapped)),
+        "correctly determine white is mated"
+    );
+}
 
 int assert_board_eq(uint64_t a, uint64_t b, const char *message)
 {

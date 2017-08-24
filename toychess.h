@@ -32,6 +32,7 @@ struct bitboard {
 };
 
 /*@out@*/ /*@null@*/ struct bitboard* new_board();
+/*@out@*/ /*@null@*/ struct bitboard* board_copy(struct bitboard * board);
 /*@out@*/ /*@null@*/ struct bitboard* fen_to_board(char *fen);
 void print_board(int * board);
 void new_pieces(int * board);
@@ -64,3 +65,5 @@ int bitscan( uint64_t b );
 int fen_to_piece(int fen_char);
 void add_piece_to_board(struct bitboard * board, int piece, uint64_t target);
 bool in_check(struct bitboard * board);
+uint64_t standard_attacks(struct bitboard * board);
+bool can_escape_check(struct bitboard * board);

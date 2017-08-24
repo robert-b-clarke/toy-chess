@@ -91,6 +91,21 @@ char piece_letter(int piece)
 }
 
 
+/*@out@*/ /*@null@*/ struct bitboard* board_copy( struct bitboard * board )
+{
+    struct bitboard * copied = new_board();
+    copied->pawns = board->pawns;
+    copied->rooks = board->rooks;
+    copied->knights = board->knights;
+    copied->bishops = board->bishops;
+    copied->kings = board->kings;
+    copied->queens = board->queens;
+    copied->whites = board->whites;
+    copied->moved = board->whites;
+    return copied;
+}
+
+
 void populate_board( struct bitboard * board )
 {
     /*put some pieces on the board*/
@@ -102,6 +117,8 @@ void populate_board( struct bitboard * board )
     board->queens = (uint64_t)0x1000000000000010;
     board->whites = (uint64_t)0xFFFF000000000000;
 }
+
+
 
 
 void rotate_board_180( struct bitboard * board )
@@ -473,16 +490,50 @@ void add_piece_to_board(struct bitboard * board, int piece, uint64_t target)
 
 bool in_check(struct bitboard * board)
 {
+    /*
+     * return true if white is checking black
+     */
+    uint64_t attacks = standard_attacks(board);
+    if (attacks & (board->kings & ~board->whites)) {
+        return true;
+    } else {
+        return false;
+    }
+}
+
+
+uint64_t standard_attacks(struct bitboard * board)
+{
+    /*
+     * union of all squares white can attack
+     * excludes en passant and castling
+     */
     uint64_t allies = occupied_squares(board) & board->whites;
     uint64_t enemies = occupied_squares(board) & ~board->whites;
     uint64_t attacks= pawn_attacks(board->pawns & board->whites, allies);
     attacks |= rook_attacks(board->rooks & board->whites, enemies, allies);
     attacks |= queen_attacks(board->queens & board->whites, enemies, allies);
     attacks |= bishop_attacks(board->bishops & board->whites, enemies, allies);
-    attacks |= king_attacks(board->bishops & board->whites, allies);
-    if (attacks & (board->kings & ~board->whites)) {
+    attacks |= king_attacks(board->kings & board->whites, allies);
+    return attacks;
+}
+
+
+bool can_escape_check(struct bitboard * board)
+{
+    /*
+     * Test whether we can escape from check, and if we can return true
+     * a false return means we're mated
+     */
+    struct bitboard* enemy_board = board_copy(board);
+    rotate_board_180( enemy_board );
+    enemy_board->whites = ~enemy_board->whites;
+    // compare all enemy target squares with
+    uint64_t enemy_attacks = rotate_180(standard_attacks(enemy_board));
+    if(king_attacks(board->kings & board->whites, board->whites) & ~enemy_attacks) {
+        // our king can flee all checking attacks from the opponent, so we're not mated
         return true;
-    } else {
-        return false;
     }
+    return false;
+    // TODO - escape from check via capture or blocking
 }
