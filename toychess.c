@@ -304,13 +304,13 @@ uint64_t shift_e( uint64_t bitlayer )
 
 uint64_t shift_se( uint64_t bitlayer )
 {
-    return (bitlayer & ~FILE_A) << 7;
+    return (bitlayer & ~FILE_H) << 7;
 }
 
 
 uint64_t shift_sw( uint64_t bitlayer )
 {
-    return (bitlayer & ~FILE_H) << 9;
+    return (bitlayer & ~FILE_A) << 9;
 }
 
 

@@ -51,6 +51,30 @@ void test_king_attacks()
         attacks, 
         "expected king attacks in open play"
     );
+    // test king in bottom right corner
+    assert_board_eq(
+        king_attacks(sq_map(h1), EMPTY_BOARD),
+        sq_map(g1) | sq_map(g2) | sq_map(h2),
+        "expected king attacks when trapped in bottom right corner"
+    );
+    // test king in bottom left corner
+    assert_board_eq(
+        king_attacks(sq_map(a1), EMPTY_BOARD),
+        sq_map(b1) | sq_map(b2) | sq_map(a2),
+        "expected king attacks when trapped in bottom left corner"
+    );
+    // test king in top left corner
+    assert_board_eq(
+        king_attacks(sq_map(a8), EMPTY_BOARD),
+        sq_map(b8) | sq_map(b7) | sq_map(a7),
+        "expected king attacks when trapped in top left corner"
+    );
+    // test king in top right corner
+    assert_board_eq(
+        king_attacks(sq_map(h8), EMPTY_BOARD),
+        sq_map(g8) | sq_map(g7) | sq_map(h7),
+        "expected king attacks when trapped in top right corner"
+    );
 }
 
 
