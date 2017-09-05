@@ -67,3 +67,5 @@ void add_piece_to_board(struct bitboard * board, int piece, uint64_t target);
 bool in_check(struct bitboard * board);
 uint64_t standard_attacks(struct bitboard * board);
 bool can_escape_check(struct bitboard * board);
+void remove_piece(struct bitboard * b, uint64_t t);
+int legal_moves(struct bitboard * board, uint64_t origin, uint64_t targets, int piece);

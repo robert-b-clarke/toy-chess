@@ -525,15 +525,122 @@ bool can_escape_check(struct bitboard * board)
      * Test whether we can escape from check, and if we can return true
      * a false return means we're mated
      */
-    struct bitboard* enemy_board = board_copy(board);
-    rotate_board_180( enemy_board );
-    enemy_board->whites = ~enemy_board->whites;
-    // compare all enemy target squares with
-    uint64_t enemy_attacks = rotate_180(standard_attacks(enemy_board));
-    if(king_attacks(board->kings & board->whites, board->whites) & ~enemy_attacks) {
-        // our king can flee all checking attacks from the opponent, so we're not mated
+    if(legal_moves_for_board(board) > 0) {
         return true;
     }
     return false;
-    // TODO - escape from check via capture or blocking
+    
+}
+
+
+void remove_piece(struct bitboard * b, uint64_t t) {
+    // blank a square
+    if(b->kings & t) {
+        b->kings ^= t;
+    } else if(b->queens & t) {
+        b->queens ^= t;
+    } else if(b->rooks & t) {
+        b->rooks ^= t;
+    } else if(b->bishops & t) {
+        b->bishops ^= t;
+    } else if(b->knights & t) {
+        b->knights ^= t;
+    } else if(b->pawns & t) {
+        b->pawns ^= t;
+    }
+}
+
+
+int legal_moves_for_board(struct bitboard * board) {
+    int moves = 0;
+    uint64_t allies = occupied_squares(board) & board->whites;
+    uint64_t enemies = occupied_squares(board) & ~board->whites;
+    // there's only ever one king
+    moves += legal_moves(
+        board,
+        board->kings & allies,
+        king_attacks(board->kings & board->whites, allies),
+        KING
+    );
+    
+    uint64_t next_piece = EMPTY_BOARD;
+    uint64_t remaining_pieces = board->queens & allies;
+    // TODO - hideous cargo cult of code for executing available moves
+    // use as a basis for testing then refactor to something better
+    while(population_count(remaining_pieces) > 0) {
+        remaining_pieces = delete_ls1b(remaining_pieces, &next_piece);
+        moves += legal_moves(
+            board,
+            next_piece,
+            queen_attacks(next_piece, enemies, allies),
+            QUEEN
+        );
+    }
+    remaining_pieces = board->rooks & allies;
+    while(population_count(remaining_pieces) > 0) {
+        remaining_pieces = delete_ls1b(remaining_pieces, &next_piece);
+        moves += legal_moves(
+            board,
+            next_piece,
+            rook_attacks(next_piece, enemies, allies),
+            ROOK
+        );
+    }
+    remaining_pieces = board->bishops & allies;
+    while(population_count(remaining_pieces) > 0) {
+        remaining_pieces = delete_ls1b(remaining_pieces, &next_piece);
+        moves += legal_moves(
+            board,
+            next_piece,
+            bishop_attacks(next_piece, enemies, allies),
+            BISHOP
+        );
+    }
+    remaining_pieces = board->knights & allies;
+    while(population_count(remaining_pieces) > 0) {
+        remaining_pieces = delete_ls1b(remaining_pieces, &next_piece);
+        moves += legal_moves(
+            board,
+            next_piece,
+            knight_attacks(next_piece, allies),
+            KNIGHT
+        );
+    }
+    remaining_pieces = board->pawns & allies;
+    while(population_count(remaining_pieces) > 0) {
+        remaining_pieces = delete_ls1b(remaining_pieces, &next_piece);
+        moves += legal_moves(
+            board,
+            next_piece,
+            pawn_moves(next_piece, enemies, allies) 
+                | pawn_attacks(next_piece, enemies),
+            PAWN
+        );
+    }
+    return moves;
+}
+
+
+
+int legal_moves(struct bitboard * board, uint64_t origin, uint64_t targets, int piece)
+{
+    int moves = 0;
+    uint64_t next_target;
+    uint64_t remaining_targets;
+    remaining_targets = delete_ls1b(targets, &next_target);
+    // determine if we're capturing a piece clear it first
+    struct bitboard* next_board = board_copy(board);
+    remove_piece(next_board, next_target);
+    remove_piece(next_board, origin);
+    add_piece_to_board(next_board, piece | WHITE, next_target);
+    // assess whether the board is now in check
+    rotate_board_180( next_board );
+    next_board->whites = ~next_board->whites;
+    if(!in_check(next_board)) {
+        moves ++;
+    }
+    if(remaining_targets) {
+        moves += legal_moves(board, origin, remaining_targets, piece);
+    }
+    return moves;
 }
