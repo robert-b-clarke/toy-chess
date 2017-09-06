@@ -300,6 +300,7 @@ void test_fen_to_board()
     );
     // print out the board for good measure
     print_board(to_8x8(testboard));
+    free(testboard);
 }
 
 
@@ -308,23 +309,29 @@ void test_in_check()
     char not_in_check[] = "8/8/8/8/2k5/8/8/QK6";
     char check[] = "8/8/8/8/3k4/8/8/QK6";
     // Test a board that is not in check
+    struct bitboard* testboard;
+    testboard = fen_to_board(not_in_check);
     assert_true(
-        !in_check(fen_to_board(not_in_check)),
+        !in_check(testboard),
         "Correctly detect board is not in check"
     );
     // Test a board that is in check and fail if we don't
+    testboard = fen_to_board(check);
     assert_true(
-        in_check(fen_to_board(check)),
+        in_check(testboard),
         "Correctly detect board is in check"
     );
+    free(testboard);
 }
 
 void test_escape_check()
 {
     char king_flees[] = "8/8/8/8/3K4/8/8/qk6";
     char king_trapped[] = "1k6/8/6r1/8/4b3/8/7P/6RK";
+    struct bitboard* testboard;
+    testboard = fen_to_board(king_flees);
     assert_true(
-        can_escape_check(fen_to_board(king_flees)),
+        can_escape_check(testboard),
         "correctly determine our king can flee check"
     );
     // TODO - invalid test case
@@ -333,6 +340,7 @@ void test_escape_check()
         !can_escape_check(fen_to_board(king_trapped)),
         "correctly determine white is mated"
     );*/
+    free(testboard);
 }
 
 int assert_board_eq(uint64_t a, uint64_t b, const char *message)

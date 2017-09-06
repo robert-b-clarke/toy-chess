@@ -639,6 +639,7 @@ int legal_moves(struct bitboard * board, uint64_t origin, uint64_t targets, int 
     if(!in_check(next_board)) {
         moves ++;
     }
+    free(next_board);
     if(remaining_targets) {
         moves += legal_moves(board, origin, remaining_targets, piece);
     }
