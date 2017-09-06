@@ -261,8 +261,8 @@ void test_fen_to_board()
      * into a board struct
      */
     char fen[] = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
-    struct bitboard* testboard;
-    testboard = fen_to_board(fen);
+    struct bitboard* testboard = new_board();
+    fen_to_board(fen, testboard);
     assert_board_eq(
         testboard->pawns,
         (uint64_t)0x00FF00000000FF00,
@@ -309,14 +309,14 @@ void test_in_check()
     char not_in_check[] = "8/8/8/8/2k5/8/8/QK6";
     char check[] = "8/8/8/8/3k4/8/8/QK6";
     // Test a board that is not in check
-    struct bitboard* testboard;
-    testboard = fen_to_board(not_in_check);
+    struct bitboard* testboard = new_board();
+    fen_to_board(not_in_check, testboard);
     assert_true(
         !in_check(testboard),
         "Correctly detect board is not in check"
     );
     // Test a board that is in check and fail if we don't
-    testboard = fen_to_board(check);
+    fen_to_board(check, testboard);
     assert_true(
         in_check(testboard),
         "Correctly detect board is in check"
@@ -328,8 +328,8 @@ void test_escape_check()
 {
     char king_flees[] = "8/8/8/8/3K4/8/8/qk6";
     char king_trapped[] = "1k6/8/6r1/8/4b3/8/7P/6RK";
-    struct bitboard* testboard;
-    testboard = fen_to_board(king_flees);
+    struct bitboard* testboard = new_board();
+    fen_to_board(king_flees, testboard);
     assert_true(
         can_escape_check(testboard),
         "correctly determine our king can flee check"

@@ -32,8 +32,8 @@ struct bitboard {
 };
 
 /*@out@*/ /*@null@*/ struct bitboard* new_board();
-/*@out@*/ /*@null@*/ struct bitboard* board_copy(struct bitboard * board);
-/*@out@*/ /*@null@*/ struct bitboard* fen_to_board(char *fen);
+void board_copy(struct bitboard * src, struct bitboard * dst);
+void fen_to_board(char *fen, struct bitboard * board);
 void print_board(int * board);
 void new_pieces(int * board);
 char piece_letter(int piece);

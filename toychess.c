@@ -91,18 +91,16 @@ char piece_letter(int piece)
 }
 
 
-/*@out@*/ /*@null@*/ struct bitboard* board_copy( struct bitboard * board )
+void board_copy(struct bitboard * src, struct bitboard * dst)
 {
-    struct bitboard * copied = new_board();
-    copied->pawns = board->pawns;
-    copied->rooks = board->rooks;
-    copied->knights = board->knights;
-    copied->bishops = board->bishops;
-    copied->kings = board->kings;
-    copied->queens = board->queens;
-    copied->whites = board->whites;
-    copied->moved = board->whites;
-    return copied;
+    dst->pawns = src->pawns;
+    dst->rooks = src->rooks;
+    dst->knights = src->knights;
+    dst->bishops = src->bishops;
+    dst->kings = src->kings;
+    dst->queens = src->queens;
+    dst->whites = src->whites;
+    dst->moved = src->whites;
 }
 
 
@@ -393,13 +391,12 @@ int bitscan ( uint64_t b )
 }
 
 
-struct bitboard* fen_to_board(char *fen){
+void fen_to_board(char *fen, struct bitboard* board)
+{
     /*
      * Parse a string of "Forsyth-Edwards Notation" game state and return a
      * board struct
      */
-    struct bitboard* board;
-    board = new_board();
     int rank = 7; // 0 indexed
     int file = 0;
     do {
@@ -423,7 +420,6 @@ struct bitboard* fen_to_board(char *fen){
 
     // Currently we throw away the remainder of the FEN string
     // Future support can be added for castling, en-passant, game clock etc
-    return board;
 }
 
 
@@ -629,7 +625,8 @@ int legal_moves(struct bitboard * board, uint64_t origin, uint64_t targets, int 
     uint64_t remaining_targets;
     remaining_targets = delete_ls1b(targets, &next_target);
     // determine if we're capturing a piece clear it first
-    struct bitboard* next_board = board_copy(board);
+    struct bitboard* next_board = new_board();
+    board_copy(board, next_board);
     remove_piece(next_board, next_target);
     remove_piece(next_board, origin);
     add_piece_to_board(next_board, piece | WHITE, next_target);
