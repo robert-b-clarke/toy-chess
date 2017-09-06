@@ -75,19 +75,26 @@ char piece_letter(int piece)
 /*@out@*/ /*@null@*/ struct bitboard* new_board() 
 {
     struct bitboard* board = (struct bitboard* )malloc( sizeof(struct bitboard) );
-    uint64_t empty_row = (uint64_t)0x0000000000000000;
     if (board) {
         /* intitialise everyhing to empty */
-        board->whites = empty_row;
-        board->moved = empty_row;
-        board->pawns = empty_row;
-        board->rooks = empty_row;
-        board->knights = empty_row;
-        board->bishops = empty_row;
-        board->kings = empty_row;
-        board->pawns = empty_row;
+        empty_board(board);
     }
     return board;
+}
+
+
+void empty_board(struct bitboard * board)
+{
+    uint64_t empty_row = (uint64_t)0x0000000000000000;
+    board->whites = empty_row;
+    board->moved = empty_row;
+    board->pawns = empty_row;
+    board->rooks = empty_row;
+    board->knights = empty_row;
+    board->bishops = empty_row;
+    board->kings = empty_row;
+    board->pawns = empty_row;
+    board->queens = empty_row;
 }
 
 
@@ -399,6 +406,9 @@ void fen_to_board(char *fen, struct bitboard* board)
      */
     int rank = 7; // 0 indexed
     int file = 0;
+    // wipe the board to start afresh
+    empty_board(board);
+
     do {
         // if alpha (rnbkqp/RNBKQP) move target west one place
         // if / move east 8 and south 1

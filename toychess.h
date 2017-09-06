@@ -43,6 +43,7 @@ struct bitboard {
 };
 
 /*@out@*/ /*@null@*/ struct bitboard* new_board();
+void empty_board(struct bitboard * board);
 void board_copy(struct bitboard * src, struct bitboard * dst);
 void fen_to_board(char *fen, struct bitboard * board);
 void print_board(int * board);
