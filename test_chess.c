@@ -328,6 +328,10 @@ void test_escape_check()
 {
     char king_flees[] = "8/8/8/8/3K4/8/8/qk6";
     char king_trapped[] = "8/8/1k6/4b3/4b3/8/P7/K7";
+    char knight_interposes[] = "8/8/1pk5/8/3B4/N7/PP5Q/K4r2";
+    char pawn_captures[] = "8/8/2k5/8/p3b3/1np5/P7/K7";
+    char pawn_pinned[] = "8/8/2k5/8/r3b3/1np5/P7/K7";
+
     struct bitboard* testboard = new_board();
     fen_to_board(king_flees, testboard);
     assert_true(
@@ -338,6 +342,22 @@ void test_escape_check()
     assert_true(
         !can_escape_check(testboard),
         "correctly determine white is mated"
+    );
+    fen_to_board(knight_interposes, testboard);
+    assert_true(
+        can_escape_check(testboard),
+        "correctly determine we can interpose the white Knight"
+    );
+    fen_to_board(pawn_captures, testboard);
+    assert_true(
+        can_escape_check(testboard),
+        "correctly determine we can interpose the white Knight"
+    );
+    fen_to_board(pawn_pinned, testboard);
+    print_board(to_8x8(testboard));
+    assert_true(
+        !can_escape_check(testboard),
+        "We can't escape check as the white pawn is \"pinned\" by rook"
     );
     free(testboard);
 }
