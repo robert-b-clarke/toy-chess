@@ -516,11 +516,13 @@ uint64_t standard_attacks(struct bitboard * board)
      */
     uint64_t allies = occupied_squares(board) & board->whites;
     uint64_t enemies = occupied_squares(board) & ~board->whites;
-    uint64_t attacks= pawn_attacks(board->pawns & board->whites, allies);
-    attacks |= rook_attacks(board->rooks & board->whites, enemies, allies);
-    attacks |= queen_attacks(board->queens & board->whites, enemies, allies);
-    attacks |= bishop_attacks(board->bishops & board->whites, enemies, allies);
-    attacks |= king_attacks(board->kings & board->whites, allies);
+
+    uint64_t attacks = pawn_attacks(board->pawns & allies, enemies);
+    attacks |= rook_attacks(board->rooks & allies, enemies, allies);
+    attacks |= queen_attacks(board->queens & allies, enemies, allies);
+    attacks |= bishop_attacks(board->bishops & allies, enemies, allies);
+    attacks |= knight_attacks(board->knights & allies, allies);
+    attacks |= king_attacks(board->kings & allies, allies);
     return attacks;
 }
 
@@ -644,6 +646,9 @@ int legal_moves(struct bitboard * board, uint64_t origin, uint64_t targets, int 
     rotate_board_180( next_board );
     next_board->whites = ~next_board->whites;
     if(!in_check(next_board)) {
+        // printf("legal move %c%s\n",
+        //     piece_letter(piece),
+        //     SQUARE_NAMES[bitscan(next_target)]);
         moves ++;
     }
     free(next_board);
