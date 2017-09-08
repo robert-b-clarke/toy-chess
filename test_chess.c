@@ -297,7 +297,7 @@ void test_fen_to_board()
         "bishops initialised correctly"
     );
     // print out the board for good measure
-    print_board(to_8x8(&testboard));
+    print_board(to_8x8(testboard));
 }
 
 
@@ -309,13 +309,13 @@ void test_in_check()
     struct bitboard testboard = {};
     fen_to_board(not_in_check, &testboard);
     assert_true(
-        !in_check(&testboard),
+        !in_check(testboard),
         "Correctly detect board is not in check"
     );
     // Test a board that is in check and fail if we don't
     fen_to_board(check, &testboard);
     assert_true(
-        in_check(&testboard),
+        in_check(testboard),
         "Correctly detect board is in check"
     );
 }
@@ -331,27 +331,27 @@ void test_escape_check()
     struct bitboard testboard = {};
     fen_to_board(king_flees, &testboard);
     assert_true(
-        can_escape_check(&testboard),
+        can_escape_check(testboard),
         "correctly determine our king can flee check"
     );
     fen_to_board(king_trapped, &testboard);
     assert_true(
-        !can_escape_check(&testboard),
+        !can_escape_check(testboard),
         "correctly determine white is mated"
     );
     fen_to_board(knight_interposes, &testboard);
     assert_true(
-        can_escape_check(&testboard),
+        can_escape_check(testboard),
         "correctly determine we can interpose the white Knight"
     );
     fen_to_board(pawn_captures, &testboard);
     assert_true(
-        can_escape_check(&testboard),
+        can_escape_check(testboard),
         "correctly determine we can interpose the white Knight"
     );
     fen_to_board(pawn_pinned, &testboard);
     assert_true(
-        !can_escape_check(&testboard),
+        !can_escape_check(testboard),
         "We can't escape check as the white pawn is \"pinned\" by rook"
     );
 }

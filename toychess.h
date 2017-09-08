@@ -42,18 +42,21 @@ struct bitboard {
     uint64_t moved; // TODO - we may not need moved, depends on castling
 };
 
+typedef struct bitboard Bitboard;
+
+
 /*@out@*/ /*@null@*/ struct bitboard* new_board();
 void empty_board(struct bitboard * board);
-void board_copy(struct bitboard * src, struct bitboard * dst);
+void board_copy(Bitboard bitboard, struct bitboard * dst);
 void fen_to_board(char *fen, struct bitboard * board);
 void print_board(int * board);
 void new_pieces(int * board);
 char piece_letter(int piece);
 void populate_board( struct bitboard * board );
 void rotate_board_180( struct bitboard * board );
-int * to_8x8( struct bitboard * board );
+int * to_8x8(Bitboard board);
 int population_count ( uint64_t bitboard );
-uint64_t occupied_squares( struct bitboard * board );
+uint64_t occupied_squares(Bitboard board);
 uint64_t shift_n( uint64_t bitlayer );
 uint64_t shift_ne( uint64_t bitlayer );
 uint64_t shift_nw( uint64_t bitlayer );
@@ -76,8 +79,9 @@ uint64_t delete_ls1b(uint64_t bitlayer, uint64_t *deleted_bit);
 int bitscan( uint64_t b );
 int fen_to_piece(int fen_char);
 void add_piece_to_board(struct bitboard * board, int piece, uint64_t target);
-bool in_check(struct bitboard * board);
-uint64_t standard_attacks(struct bitboard * board);
-bool can_escape_check(struct bitboard * board);
+bool in_check(Bitboard board);
+uint64_t standard_attacks(Bitboard board);
+bool can_escape_check(Bitboard board);
 void remove_piece(struct bitboard * b, uint64_t t);
-int legal_moves(struct bitboard * board, uint64_t origin, uint64_t targets, int piece);
+int legal_moves(Bitboard board, uint64_t origin, uint64_t targets, int piece);
+int legal_moves_for_board(Bitboard board);

@@ -98,16 +98,16 @@ void empty_board(struct bitboard * board)
 }
 
 
-void board_copy(struct bitboard * src, struct bitboard * dst)
+void board_copy(Bitboard src, struct bitboard * dst)
 {
-    dst->pawns = src->pawns;
-    dst->rooks = src->rooks;
-    dst->knights = src->knights;
-    dst->bishops = src->bishops;
-    dst->kings = src->kings;
-    dst->queens = src->queens;
-    dst->whites = src->whites;
-    dst->moved = src->whites;
+    dst->pawns = src.pawns;
+    dst->rooks = src.rooks;
+    dst->knights = src.knights;
+    dst->bishops = src.bishops;
+    dst->kings = src.kings;
+    dst->queens = src.queens;
+    dst->whites = src.whites;
+    dst->moved = src.moved;
 }
 
 
@@ -140,7 +140,7 @@ void rotate_board_180( struct bitboard * board )
 }
 
 
-int * to_8x8( struct bitboard * board )
+int * to_8x8(Bitboard board)
 {
     /* convert bit board into 8x8 hex format for display */
     uint64_t target_piece = SQUARE_0;
@@ -153,20 +153,20 @@ int * to_8x8( struct bitboard * board )
     for (i=0; i < 64; i++) {
         int piece = 0;
         /*target_piece = (uint64_t)0x01 << i;*/
-        if (board->pawns & target_piece) {
+        if (board.pawns & target_piece) {
             piece = PAWN;
-        }  else if (board->rooks & target_piece) {
+        }  else if (board.rooks & target_piece) {
             piece = ROOK;
-        }  else if (board->knights & target_piece) {
+        }  else if (board.knights & target_piece) {
             piece = KNIGHT;
-        }  else if (board->bishops & target_piece) {
+        }  else if (board.bishops & target_piece) {
             piece = BISHOP;
-        }  else if (board->queens & target_piece) {
+        }  else if (board.queens & target_piece) {
             piece = QUEEN;
-        }  else if (board->kings & target_piece) {
+        }  else if (board.kings & target_piece) {
             piece = KING;
         }
-        if (board->whites & target_piece) {
+        if (board.whites & target_piece) {
             piece = piece | WHITE;
         }
         board_8x8[i] = piece;
@@ -186,10 +186,10 @@ int population_count ( uint64_t bitboard_layer )
 }
 
 
-uint64_t occupied_squares( struct bitboard * board )
+uint64_t occupied_squares(Bitboard board)
 {
     /* any square with a piece on it */
-    return board->pawns | board->rooks | board->knights | board->bishops | board->kings | board->queens;
+    return board.pawns | board.rooks | board.knights | board.bishops | board.kings | board.queens;
 }
 
 
@@ -494,13 +494,13 @@ void add_piece_to_board(struct bitboard * board, int piece, uint64_t target)
 }
 
 
-bool in_check(struct bitboard * board)
+bool in_check(Bitboard board)
 {
     /*
      * return true if white is checking black
      */
     uint64_t attacks = standard_attacks(board);
-    if (attacks & (board->kings & ~board->whites)) {
+    if (attacks & (board.kings & ~board.whites)) {
         return true;
     } else {
         return false;
@@ -508,26 +508,26 @@ bool in_check(struct bitboard * board)
 }
 
 
-uint64_t standard_attacks(struct bitboard * board)
+uint64_t standard_attacks(Bitboard board)
 {
     /*
      * union of all squares white can attack
      * excludes en passant and castling
      */
-    uint64_t allies = occupied_squares(board) & board->whites;
-    uint64_t enemies = occupied_squares(board) & ~board->whites;
+    uint64_t allies = occupied_squares(board) & board.whites;
+    uint64_t enemies = occupied_squares(board) & ~board.whites;
 
-    uint64_t attacks = pawn_attacks(board->pawns & allies, enemies);
-    attacks |= rook_attacks(board->rooks & allies, enemies, allies);
-    attacks |= queen_attacks(board->queens & allies, enemies, allies);
-    attacks |= bishop_attacks(board->bishops & allies, enemies, allies);
-    attacks |= knight_attacks(board->knights & allies, allies);
-    attacks |= king_attacks(board->kings & allies, allies);
+    uint64_t attacks = pawn_attacks(board.pawns & allies, enemies);
+    attacks |= rook_attacks(board.rooks & allies, enemies, allies);
+    attacks |= queen_attacks(board.queens & allies, enemies, allies);
+    attacks |= bishop_attacks(board.bishops & allies, enemies, allies);
+    attacks |= knight_attacks(board.knights & allies, allies);
+    attacks |= king_attacks(board.kings & allies, allies);
     return attacks;
 }
 
 
-bool can_escape_check(struct bitboard * board)
+bool can_escape_check(Bitboard board)
 {
     /*
      * Test whether we can escape from check, and if we can return true
@@ -559,20 +559,20 @@ void remove_piece(struct bitboard * b, uint64_t t) {
 }
 
 
-int legal_moves_for_board(struct bitboard * board) {
+int legal_moves_for_board(Bitboard board) {
     int moves = 0;
-    uint64_t allies = occupied_squares(board) & board->whites;
-    uint64_t enemies = occupied_squares(board) & ~board->whites;
+    uint64_t allies = occupied_squares(board) & board.whites;
+    uint64_t enemies = occupied_squares(board) & ~board.whites;
     // there's only ever one king
     moves += legal_moves(
         board,
-        board->kings & allies,
-        king_attacks(board->kings & board->whites, allies),
+        board.kings & allies,
+        king_attacks(board.kings & board.whites, allies),
         KING
     );
     
     uint64_t next_piece = EMPTY_BOARD;
-    uint64_t remaining_pieces = board->queens & allies;
+    uint64_t remaining_pieces = board.queens & allies;
     // TODO - hideous cargo cult of code for executing available moves
     // use as a basis for testing then refactor to something better
     while(population_count(remaining_pieces) > 0) {
@@ -584,7 +584,7 @@ int legal_moves_for_board(struct bitboard * board) {
             QUEEN
         );
     }
-    remaining_pieces = board->rooks & allies;
+    remaining_pieces = board.rooks & allies;
     while(population_count(remaining_pieces) > 0) {
         remaining_pieces = delete_ls1b(remaining_pieces, &next_piece);
         moves += legal_moves(
@@ -594,7 +594,7 @@ int legal_moves_for_board(struct bitboard * board) {
             ROOK
         );
     }
-    remaining_pieces = board->bishops & allies;
+    remaining_pieces = board.bishops & allies;
     while(population_count(remaining_pieces) > 0) {
         remaining_pieces = delete_ls1b(remaining_pieces, &next_piece);
         moves += legal_moves(
@@ -604,7 +604,7 @@ int legal_moves_for_board(struct bitboard * board) {
             BISHOP
         );
     }
-    remaining_pieces = board->knights & allies;
+    remaining_pieces = board.knights & allies;
     while(population_count(remaining_pieces) > 0) {
         remaining_pieces = delete_ls1b(remaining_pieces, &next_piece);
         moves += legal_moves(
@@ -614,7 +614,7 @@ int legal_moves_for_board(struct bitboard * board) {
             KNIGHT
         );
     }
-    remaining_pieces = board->pawns & allies;
+    remaining_pieces = board.pawns & allies;
     while(population_count(remaining_pieces) > 0) {
         remaining_pieces = delete_ls1b(remaining_pieces, &next_piece);
         moves += legal_moves(
@@ -630,7 +630,7 @@ int legal_moves_for_board(struct bitboard * board) {
 
 
 
-int legal_moves(struct bitboard * board, uint64_t origin, uint64_t targets, int piece)
+int legal_moves(Bitboard board, uint64_t origin, uint64_t targets, int piece)
 {
     int moves = 0;
     uint64_t next_target;
@@ -645,7 +645,7 @@ int legal_moves(struct bitboard * board, uint64_t origin, uint64_t targets, int 
     // assess whether the board is now in check
     rotate_board_180( &next_board );
     next_board.whites = ~next_board.whites;
-    if(!in_check(&next_board)) {
+    if(!in_check(next_board)) {
         // printf("legal move %c%s\n",
         //     piece_letter(piece),
         //     SQUARE_NAMES[bitscan(next_target)]);
