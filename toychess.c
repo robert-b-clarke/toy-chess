@@ -83,7 +83,7 @@ char piece_letter(int piece)
 }
 
 
-void empty_board(struct bitboard * board)
+void empty_board(Bitboard * board)
 {
     uint64_t empty_row = (uint64_t)0x0000000000000000;
     board->whites = empty_row;
@@ -98,7 +98,7 @@ void empty_board(struct bitboard * board)
 }
 
 
-void board_copy(Bitboard src, struct bitboard * dst)
+void board_copy(Bitboard src, Bitboard * dst)
 {
     dst->pawns = src.pawns;
     dst->rooks = src.rooks;
@@ -111,7 +111,7 @@ void board_copy(Bitboard src, struct bitboard * dst)
 }
 
 
-void populate_board( struct bitboard * board )
+void populate_board(Bitboard * board)
 {
     /*put some pieces on the board*/
     board->pawns = (uint64_t)0x00FF00000000FF00;
@@ -126,7 +126,7 @@ void populate_board( struct bitboard * board )
 
 
 
-void rotate_board_180( struct bitboard * board )
+void rotate_board_180( Bitboard * board )
 {
     /*rotate the entire board 180 degrees*/
     board->pawns = rotate_180(board->pawns);
@@ -398,7 +398,7 @@ int bitscan ( uint64_t b )
 }
 
 
-void fen_to_board(char *fen, struct bitboard* board)
+void fen_to_board(char *fen, Bitboard* board)
 {
     /*
      * Parse a string of "Forsyth-Edwards Notation" game state and return a
@@ -464,7 +464,7 @@ int fen_to_piece(int fen_char)
 }
 
 
-void add_piece_to_board(struct bitboard * board, int piece, uint64_t target)
+void add_piece_to_board(Bitboard * board, int piece, uint64_t target)
 {
     // Add a piece nibble to a board
     if(piece & WHITE) {
@@ -541,7 +541,7 @@ bool can_escape_check(Bitboard board)
 }
 
 
-void remove_piece(struct bitboard * b, uint64_t t) {
+void remove_piece(Bitboard * b, uint64_t t) {
     // blank a square
     if(b->kings & t) {
         b->kings ^= t;
