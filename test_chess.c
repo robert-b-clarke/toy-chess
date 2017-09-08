@@ -171,24 +171,22 @@ void test_rotate_180()
 void test_rotate_board()
 {
     /* rotate an entire board 180 degrees */
-    struct bitboard* testboard;
-    testboard = new_board();
-    populate_board(testboard);
-    rotate_board_180(testboard);
+    struct bitboard testboard = {};
+    populate_board(&testboard);
+    rotate_board_180(&testboard);
     /* white queen should have moved to E8 */
     assert_board_eq(
-        testboard->queens & testboard->whites,
+        testboard.queens & testboard.whites,
         sq_map(e8),
         "White queen has moved to e8"
     );
     /* rotate the board back */
-    rotate_board_180(testboard);
+    rotate_board_180(&testboard);
     assert_board_eq(
-        testboard->queens & testboard->whites,
+        testboard.queens & testboard.whites,
         sq_map(d1),
         "White queen has moved back to d1"
     );
-    free(testboard);
 }
 
 
@@ -261,46 +259,45 @@ void test_fen_to_board()
      * into a board struct
      */
     char fen[] = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
-    struct bitboard* testboard = new_board();
-    fen_to_board(fen, testboard);
+    struct bitboard testboard;
+    fen_to_board(fen, &testboard);
     assert_board_eq(
-        testboard->pawns,
+        testboard.pawns,
         (uint64_t)0x00FF00000000FF00,
         "pawns initialised correctly"
     );
     assert_board_eq(
-        testboard->rooks,
+        testboard.rooks,
         (uint64_t)0x8100000000000081,
         "rooks initialised correctly"
     );
     assert_board_eq(
-        testboard->knights,
+        testboard.knights,
         (uint64_t)0x4200000000000042,
         "knights initialised correctly"
     );
     assert_board_eq(
-        testboard->bishops,
+        testboard.bishops,
         (uint64_t)0x2400000000000024,
         "bishops initialised correctly"
     );
     assert_board_eq(
-        testboard->kings,
+        testboard.kings,
         (uint64_t)0x0800000000000008,
         "kings initialised correctly"
     );
     assert_board_eq(
-        testboard->queens,
+        testboard.queens,
         (uint64_t)0x1000000000000010,
         "queens initialised correctly"
     );
     assert_board_eq(
-        testboard->whites,
+        testboard.whites,
         (uint64_t)0xFFFF000000000000,
         "bishops initialised correctly"
     );
     // print out the board for good measure
-    print_board(to_8x8(testboard));
-    free(testboard);
+    print_board(to_8x8(&testboard));
 }
 
 
@@ -309,19 +306,18 @@ void test_in_check()
     char not_in_check[] = "8/8/8/8/2k5/8/8/QK6";
     char check[] = "8/8/8/8/3k4/8/8/QK6";
     // Test a board that is not in check
-    struct bitboard* testboard = new_board();
-    fen_to_board(not_in_check, testboard);
+    struct bitboard testboard = {};
+    fen_to_board(not_in_check, &testboard);
     assert_true(
-        !in_check(testboard),
+        !in_check(&testboard),
         "Correctly detect board is not in check"
     );
     // Test a board that is in check and fail if we don't
-    fen_to_board(check, testboard);
+    fen_to_board(check, &testboard);
     assert_true(
-        in_check(testboard),
+        in_check(&testboard),
         "Correctly detect board is in check"
     );
-    free(testboard);
 }
 
 void test_escape_check()
@@ -332,34 +328,32 @@ void test_escape_check()
     char pawn_captures[] = "8/8/2k5/8/p3b3/1np5/P7/K7";
     char pawn_pinned[] = "8/8/2k5/8/r3b3/1np5/P7/K7";
 
-    struct bitboard* testboard = new_board();
-    fen_to_board(king_flees, testboard);
+    struct bitboard testboard = {};
+    fen_to_board(king_flees, &testboard);
     assert_true(
-        can_escape_check(testboard),
+        can_escape_check(&testboard),
         "correctly determine our king can flee check"
     );
-    fen_to_board(king_trapped, testboard);
+    fen_to_board(king_trapped, &testboard);
     assert_true(
-        !can_escape_check(testboard),
+        !can_escape_check(&testboard),
         "correctly determine white is mated"
     );
-    fen_to_board(knight_interposes, testboard);
+    fen_to_board(knight_interposes, &testboard);
     assert_true(
-        can_escape_check(testboard),
+        can_escape_check(&testboard),
         "correctly determine we can interpose the white Knight"
     );
-    fen_to_board(pawn_captures, testboard);
+    fen_to_board(pawn_captures, &testboard);
     assert_true(
-        can_escape_check(testboard),
+        can_escape_check(&testboard),
         "correctly determine we can interpose the white Knight"
     );
-    fen_to_board(pawn_pinned, testboard);
-    print_board(to_8x8(testboard));
+    fen_to_board(pawn_pinned, &testboard);
     assert_true(
-        !can_escape_check(testboard),
+        !can_escape_check(&testboard),
         "We can't escape check as the white pawn is \"pinned\" by rook"
     );
-    free(testboard);
 }
 
 int assert_board_eq(uint64_t a, uint64_t b, const char *message)

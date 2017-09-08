@@ -637,21 +637,20 @@ int legal_moves(struct bitboard * board, uint64_t origin, uint64_t targets, int 
     uint64_t remaining_targets;
     remaining_targets = delete_ls1b(targets, &next_target);
     // determine if we're capturing a piece clear it first
-    struct bitboard* next_board = new_board();
-    board_copy(board, next_board);
-    remove_piece(next_board, next_target);
-    remove_piece(next_board, origin);
-    add_piece_to_board(next_board, piece | WHITE, next_target);
+    struct bitboard next_board = {};
+    board_copy(board, &next_board);
+    remove_piece(&next_board, next_target);
+    remove_piece(&next_board, origin);
+    add_piece_to_board(&next_board, piece | WHITE, next_target);
     // assess whether the board is now in check
-    rotate_board_180( next_board );
-    next_board->whites = ~next_board->whites;
-    if(!in_check(next_board)) {
+    rotate_board_180( &next_board );
+    next_board.whites = ~next_board.whites;
+    if(!in_check(&next_board)) {
         // printf("legal move %c%s\n",
         //     piece_letter(piece),
         //     SQUARE_NAMES[bitscan(next_target)]);
         moves ++;
     }
-    free(next_board);
     if(remaining_targets) {
         moves += legal_moves(board, origin, remaining_targets, piece);
     }
