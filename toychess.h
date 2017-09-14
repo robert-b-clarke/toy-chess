@@ -44,14 +44,14 @@ typedef struct {
 
 
 /*@out@*/ /*@null@*/ Bitboard* new_board();
-void empty_board(Bitboard * board);
-void board_copy(Bitboard bitboard, Bitboard * dst);
-void fen_to_board(char *fen, Bitboard * board);
-void print_board(int * board);
-void new_pieces(int * board);
+void empty_board(Bitboard *board);
+void board_copy(Bitboard bitboard, Bitboard *dst);
+void fen_to_board(char *fen, Bitboard *board);
+void print_board(int *board);
+void new_pieces(int *board);
 char piece_letter(int piece);
-void populate_board( Bitboard * board );
-void rotate_board_180( Bitboard * board );
+void populate_board(Bitboard *board);
+void rotate_board_180(Bitboard *board);
 int * to_8x8(Bitboard board);
 int population_count (uint64_t bitlayer);
 uint64_t occupied_squares(Bitboard board);
@@ -76,10 +76,10 @@ uint64_t sq_bit(char file, int rank);
 uint64_t delete_ls1b(uint64_t bitlayer, uint64_t *deleted_bit);
 int bitscan( uint64_t b );
 int fen_to_piece(int fen_char);
-void add_piece_to_board(Bitboard * board, int piece, uint64_t target);
+void add_piece_to_board(Bitboard *board, int piece, uint64_t target);
 bool in_check(Bitboard board);
 uint64_t standard_attacks(Bitboard board);
 bool can_escape_check(Bitboard board);
-void remove_piece(Bitboard * b, uint64_t t);
+void remove_piece(Bitboard *b, uint64_t t);
 int legal_moves(Bitboard board, uint64_t origin, uint64_t targets, int piece);
 int legal_moves_for_board(Bitboard board);
