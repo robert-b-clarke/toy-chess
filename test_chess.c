@@ -171,7 +171,7 @@ void test_rotate_180()
 void test_rotate_board()
 {
     /* rotate an entire board 180 degrees */
-    struct bitboard testboard = {};
+    Bitboard testboard = {};
     populate_board(&testboard);
     rotate_board_180(&testboard);
     /* white queen should have moved to E8 */
@@ -259,7 +259,7 @@ void test_fen_to_board()
      * into a board struct
      */
     char fen[] = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
-    struct bitboard testboard;
+    Bitboard testboard;
     fen_to_board(fen, &testboard);
     assert_board_eq(
         testboard.pawns,
@@ -306,7 +306,7 @@ void test_in_check()
     char not_in_check[] = "8/8/8/8/2k5/8/8/QK6";
     char check[] = "8/8/8/8/3k4/8/8/QK6";
     // Test a board that is not in check
-    struct bitboard testboard = {};
+    Bitboard testboard = {};
     fen_to_board(not_in_check, &testboard);
     assert_true(
         !in_check(testboard),
@@ -328,7 +328,7 @@ void test_escape_check()
     char pawn_captures[] = "8/8/2k5/8/p3b3/1np5/P7/K7";
     char pawn_pinned[] = "8/8/2k5/8/r3b3/1np5/P7/K7";
 
-    struct bitboard testboard = {};
+    Bitboard testboard = {};
     fen_to_board(king_flees, &testboard);
     assert_true(
         can_escape_check(testboard),

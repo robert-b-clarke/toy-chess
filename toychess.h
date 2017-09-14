@@ -31,7 +31,7 @@ const char * SQUARE_NAMES[] = {
     "a8", "b8", "c8", "d8", "e8", "f8", "g8", "h8"
 };
 
-struct bitboard {
+typedef struct {
     uint64_t pawns;
     uint64_t knights;
     uint64_t bishops;
@@ -40,12 +40,10 @@ struct bitboard {
     uint64_t kings;
     uint64_t whites;
     uint64_t moved; // TODO - we may not need moved, depends on castling
-};
-
-typedef struct bitboard Bitboard;
+} Bitboard;
 
 
-/*@out@*/ /*@null@*/ struct bitboard* new_board();
+/*@out@*/ /*@null@*/ Bitboard* new_board();
 void empty_board(Bitboard * board);
 void board_copy(Bitboard bitboard, Bitboard * dst);
 void fen_to_board(char *fen, Bitboard * board);
@@ -55,7 +53,7 @@ char piece_letter(int piece);
 void populate_board( Bitboard * board );
 void rotate_board_180( Bitboard * board );
 int * to_8x8(Bitboard board);
-int population_count ( uint64_t bitboard );
+int population_count (uint64_t bitlayer);
 uint64_t occupied_squares(Bitboard board);
 uint64_t shift_n( uint64_t bitlayer );
 uint64_t shift_ne( uint64_t bitlayer );

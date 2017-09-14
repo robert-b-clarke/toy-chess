@@ -72,9 +72,9 @@ char piece_letter(int piece)
 }
 
 
-/*@out@*/ /*@null@*/ struct bitboard* new_board() 
+/*@out@*/ /*@null@*/ Bitboard* new_board() 
 {
-    struct bitboard* board = (struct bitboard* )malloc( sizeof(struct bitboard) );
+    Bitboard* board = (Bitboard* )malloc( sizeof(Bitboard) );
     if (board) {
         /* intitialise everyhing to empty */
         empty_board(board);
@@ -175,12 +175,12 @@ int * to_8x8(Bitboard board)
     return board_8x8;
 }
 
-int population_count ( uint64_t bitboard_layer )
+int population_count(uint64_t bitlayer)
 {
     /* count the set bits */
     int c;
-    for (c = 0; bitboard_layer; bitboard_layer >>= 1) {
-        c += bitboard_layer & LOWEST_SQUARE;
+    for (c = 0; bitlayer; bitlayer >>= 1) {
+        c += bitlayer & LOWEST_SQUARE;
     }
     return c;
 }
@@ -637,7 +637,7 @@ int legal_moves(Bitboard board, uint64_t origin, uint64_t targets, int piece)
     uint64_t remaining_targets;
     remaining_targets = delete_ls1b(targets, &next_target);
     // determine if we're capturing a piece clear it first
-    struct bitboard next_board = {};
+    Bitboard next_board = {};
     board_copy(board, &next_board);
     remove_piece(&next_board, next_target);
     remove_piece(&next_board, origin);
