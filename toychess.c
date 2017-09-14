@@ -72,17 +72,6 @@ char piece_letter(int piece)
 }
 
 
-/*@out@*/ /*@null@*/ Bitboard* new_board() 
-{
-    Bitboard* board = (Bitboard* )malloc( sizeof(Bitboard) );
-    if (board) {
-        /* intitialise everyhing to empty */
-        empty_board(board);
-    }
-    return board;
-}
-
-
 void empty_board(Bitboard *board)
 {
     uint64_t empty_row = (uint64_t)0x0000000000000000;

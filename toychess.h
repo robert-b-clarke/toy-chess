@@ -43,12 +43,10 @@ typedef struct {
 } Bitboard;
 
 
-/*@out@*/ /*@null@*/ Bitboard* new_board();
 void empty_board(Bitboard *board);
 void board_copy(Bitboard bitboard, Bitboard *dst);
 void fen_to_board(char *fen, Bitboard *board);
 void print_board(int *board);
-void new_pieces(int *board);
 char piece_letter(int piece);
 void populate_board(Bitboard *board);
 void rotate_board_180(Bitboard *board);
