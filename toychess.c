@@ -13,9 +13,11 @@ const uint64_t FILE_AB = (uint64_t)0xC0C0C0C0C0C0C0C0;
 const uint64_t FILE_GH = (uint64_t)0x0303030303030303;
 const uint64_t RANK_8 = (uint64_t)0x00000000000000FF;
 const uint64_t RANK_2 = (uint64_t)0x00FF000000000000;
+const uint64_t RANK_1 = (uint64_t)0xFF00000000000000;
 const uint64_t LOWEST_SQUARE = (uint64_t)0x0000000000000001;
 const uint64_t SQUARE_0 = (uint64_t)0x8000000000000000;
 const uint64_t EMPTY_BOARD = (uint64_t)0x0000000000000000;
+const uint64_t FULL_BOARD = (uint64_t)0xFFFFFFFFFFFFFFFF;
 
 
 void print_board(int *board)
@@ -696,4 +698,36 @@ uint64_t src_pieces(Bitboard board, uint64_t target, int piece)
             }
     }
     return srcs;
+}
+
+    
+void parse_algebra(char *algebra, Move *move)
+{
+    char dst_file = 0;
+    char dst_rank = 0;
+    char src_file = 0;
+    char src_rank = 0;
+    char piece_char = 0;
+    int src_piece = PAWN | WHITE;
+    uint64_t src_region = FULL_BOARD;
+    uint64_t target_square = EMPTY_BOARD;
+    // TODO - remove x and +
+    if(sscanf(algebra,  "%1[a-i]%1[NBRKQ]%1[a-i]%1[1-8]", &src_file,
+            &piece_char, &dst_file, &dst_rank) == 4) {
+        src_piece = fen_to_piece(piece_char);
+    } else if(sscanf(algebra,  "%1[a-i]%1[a-i]%1[1-8]", &src_file,
+            &dst_file, &dst_rank) == 3) {
+    } else if(sscanf(algebra,  "%1[NBRKQ]%1[a-i]%1[1-8]", &piece_char,
+            &dst_file, &dst_rank) == 3) {
+        src_piece = fen_to_piece(piece_char);
+    } else {
+        sscanf(algebra,  "%1[a-i]%1[1-8]", &dst_file, &dst_rank);
+    }
+    target_square = (FILE_A >> (dst_file - 0x61)) & (RANK_1 >> ((dst_rank - 0x31) * 8));
+    // narrow source region
+    if(src_file) {
+        src_region &= FILE_A >> (dst_file - 0x61);
+    }
+    // printf("active piece %c going to %s\n", piece_letter(src_piece), SQUARE_NAMES[bitscan(target_square)]);
+    // TODO - search for potential sources
 }

@@ -42,6 +42,10 @@ typedef struct {
     uint64_t moved; // TODO - we may not need moved, depends on castling
 } Bitboard;
 
+typedef struct {
+    uint64_t src;
+    uint64_t dst;
+} Move;
 
 void empty_board(Bitboard *board);
 void fen_to_board(char *fen, Bitboard *board);
@@ -81,3 +85,4 @@ void remove_piece(Bitboard *b, uint64_t t);
 int legal_moves(Bitboard board, uint64_t origin, uint64_t targets, int piece);
 int legal_moves_for_board(Bitboard board);
 uint64_t src_pieces(Bitboard board, uint64_t target, int piece);
+void parse_algebra(char *algebra, Move *move);

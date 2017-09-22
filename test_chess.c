@@ -21,6 +21,7 @@ void test_fen_to_board();
 void test_in_check();
 void test_escape_check();
 void test_src_pieces();
+void test_parse_algebra();
 
 
 int main()
@@ -40,6 +41,7 @@ int main()
     test_in_check();
     test_escape_check();
     test_src_pieces();
+    test_parse_algebra();
     return 0;
 }
 
@@ -444,4 +446,13 @@ void test_src_pieces()
         EMPTY_BOARD,
         "No bishops available"
     );
+}
+    
+void test_parse_algebra()
+{
+    Move move = {};
+    parse_algebra("eRd5", &move);
+    parse_algebra("ed5", &move);
+    parse_algebra("Kd5", &move);
+    parse_algebra("d5", &move);
 }
