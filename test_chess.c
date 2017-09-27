@@ -20,6 +20,7 @@ void test_bitscan();
 void test_fen_to_board();
 void test_in_check();
 void test_escape_check();
+void test_src_pieces();
 
 
 int main()
@@ -38,6 +39,7 @@ int main()
     test_fen_to_board();
     test_in_check();
     test_escape_check();
+    test_src_pieces();
     return 0;
 }
 
@@ -390,4 +392,56 @@ uint64_t sq_map(int location)
      */
 
     return SQUARE_0 >> location;
+}
+
+
+void test_src_pieces()
+{
+    // https://chess.stackexchange.com/questions/1817/how-are-pgn-ambiguities-handled
+    char weird_board[] = "1R4QQ/R1R4Q/8/6pP/5P1P/8/NK1k4/1N1N4";
+    Bitboard testboard;
+    fen_to_board(weird_board, &testboard);
+    print_board(to_8x8(testboard));
+    // test ambiguous pawn moves
+    uint64_t srcs = src_pieces(testboard, sq_map(g5), PAWN);
+    assert_board_eq(
+        srcs,
+        sq_map(f4) | sq_map(h4),
+        "2 pawns can capture g5"
+    );
+    // test ambiguous rook moves
+    srcs = src_pieces(testboard, sq_map(b7), ROOK);
+    assert_board_eq(
+        srcs,
+        sq_map(a7) | sq_map(b8) | sq_map(c7),
+        "3 rooks can go to b7"
+    );
+    // test ambiguous knight moves
+    srcs = src_pieces(testboard, sq_map(c3), KNIGHT);
+    assert_board_eq(
+        srcs,
+        sq_map(a2) | sq_map(b1) | sq_map(d1),
+        "3 knights can go to c3"
+    );
+    // test ambiguous queen moves
+    srcs = src_pieces(testboard, sq_map(g7), QUEEN);
+    assert_board_eq(
+        srcs,
+        sq_map(g8) | sq_map(h8) | sq_map(h7),
+        "3 knights can go to c3"
+    );
+    // test king move
+    srcs = src_pieces(testboard, sq_map(c3), KING);
+    assert_board_eq(
+        srcs,
+        sq_map(b2),
+        "A single king can move to c3"
+    );
+    // test bishop move with no availablie bishops
+    srcs = src_pieces(testboard, sq_map(c3), BISHOP);
+    assert_board_eq(
+        srcs,
+        EMPTY_BOARD,
+        "No bishops available"
+    );
 }

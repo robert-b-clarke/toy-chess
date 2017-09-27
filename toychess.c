@@ -630,3 +630,70 @@ int legal_moves(Bitboard board, uint64_t origin, uint64_t targets, int piece)
     }
     return moves;
 }
+
+
+uint64_t src_pieces(Bitboard board, uint64_t target, int piece)
+{
+    // return the locations of the pieces which can reach a particular square
+    uint64_t allies = occupied_squares(board) & board.whites;
+    uint64_t enemies = occupied_squares(board) & ~board.whites;
+    uint64_t remaining_pieces;
+    uint64_t next_piece = EMPTY_BOARD;
+    uint64_t srcs = EMPTY_BOARD;
+    // TODO - as with legal_moves func there is a lot of cargo cult here
+    // a refactor is required
+    switch(piece) {
+        case PAWN:
+            remaining_pieces = board.pawns & allies;
+            while(population_count(remaining_pieces) > 0) {
+                remaining_pieces = delete_ls1b(remaining_pieces, &next_piece);
+                if((pawn_moves(next_piece, enemies, allies)
+                    | pawn_attacks(next_piece, enemies)) & target) {
+                    srcs |= next_piece;
+                }
+            }
+            return srcs;
+        case KNIGHT:
+            remaining_pieces = board.knights & allies;
+            while(population_count(remaining_pieces) > 0) {
+                remaining_pieces = delete_ls1b(remaining_pieces, &next_piece);
+                if(knight_attacks(next_piece, allies) & target) {
+                    srcs |= next_piece;
+                }
+            }
+            return srcs;
+        case ROOK:
+            remaining_pieces = board.rooks & allies;
+            while(population_count(remaining_pieces) > 0) {
+                remaining_pieces = delete_ls1b(remaining_pieces, &next_piece);
+                if(rook_attacks(next_piece, enemies, allies)) {
+                    srcs |= next_piece;
+                }
+            }
+            return srcs;
+        case QUEEN:
+            remaining_pieces = board.queens & allies;
+            while(population_count(remaining_pieces) > 0) {
+                remaining_pieces = delete_ls1b(remaining_pieces, &next_piece);
+                if(queen_attacks(next_piece, enemies, allies)) {
+                    srcs |= next_piece;
+                }
+            }
+            return srcs;
+        case BISHOP:
+            remaining_pieces = board.bishops & allies;
+            while(population_count(remaining_pieces) > 0) {
+                remaining_pieces = delete_ls1b(remaining_pieces, &next_piece);
+                if(bishop_attacks(next_piece, enemies, allies)) {
+                    srcs |= next_piece;
+                }
+            }
+            return srcs;
+        case KING:
+            // only one king
+            if(king_attacks(board.kings & allies, allies) & target) {
+                return board.kings & allies;
+            }
+    }
+    return srcs;
+}
