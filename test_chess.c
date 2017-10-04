@@ -450,9 +450,27 @@ void test_src_pieces()
     
 void test_parse_algebra()
 {
+    char weird_board[] = "1R4QQ/R1R4Q/8/6pP/5P1P/8/NK1k4/1N1N4";
+    Bitboard testboard;
+    fen_to_board(weird_board, &testboard);
     Move move = {};
-    parse_algebra("eRd5", &move);
-    parse_algebra("ed5", &move);
-    parse_algebra("Kd5", &move);
-    parse_algebra("d5", &move);
+    parse_algebra(testboard, "Nc3", &move);
+    assert_board_eq(
+        move.dst,
+        sq_map(c3),
+        "Target is c3 as expected"
+    );
+    assert_board_eq(
+        move.src,
+        sq_map(a2) | sq_map(b1) | sq_map(d1),
+        "Ambiguous move"
+    );
+
+    parse_algebra(testboard, "Nbc3", &move);
+    assert_board_eq(
+        move.src,
+        sq_map(b1),
+        "Move disambiguated"
+    );
+
 }

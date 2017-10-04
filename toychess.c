@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include <stdint.h>
+#include <string.h>
 #include <ctype.h>
 #include "toychess.h"
 
@@ -701,33 +702,45 @@ uint64_t src_pieces(Bitboard board, uint64_t target, int piece)
 }
 
     
-void parse_algebra(char *algebra, Move *move)
+void parse_algebra(Bitboard board, char *algebra, Move *move)
 {
+    /*
+     * Generously parse a PGN format algebra statement
+     * Almost no format validation
+     */
     char dst_file = 0;
     char dst_rank = 0;
     char src_file = 0;
     char src_rank = 0;
-    char piece_char = 0;
-    int src_piece = PAWN | WHITE;
+    int src_piece = PAWN;
     uint64_t src_region = FULL_BOARD;
     uint64_t target_square = EMPTY_BOARD;
-    // TODO - remove x and +
-    if(sscanf(algebra,  "%1[a-i]%1[NBRKQ]%1[a-i]%1[1-8]", &src_file,
-            &piece_char, &dst_file, &dst_rank) == 4) {
-        src_piece = fen_to_piece(piece_char);
-    } else if(sscanf(algebra,  "%1[a-i]%1[a-i]%1[1-8]", &src_file,
-            &dst_file, &dst_rank) == 3) {
-    } else if(sscanf(algebra,  "%1[NBRKQ]%1[a-i]%1[1-8]", &piece_char,
-            &dst_file, &dst_rank) == 3) {
-        src_piece = fen_to_piece(piece_char);
-    } else {
-        sscanf(algebra,  "%1[a-i]%1[1-8]", &dst_file, &dst_rank);
+    int i;
+    // loop through statement in reverse
+    // take last rank and file as destination
+    // use earlier rank or file to disambiguate
+    // Assume uppercase char is a piece
+    // ignore anything else
+    // TODO this is obviously limited!
+    for(i = strlen(algebra) - 1; i >= 0; i--) {
+        if(isdigit(algebra[i]) && !dst_rank) {
+            dst_rank = algebra[i];
+        } else if(algebra[i] >= 0x61 && algebra[i] <= 0x68) {
+            if(dst_file) {
+                src_file = algebra[i];
+            } else {
+                dst_file = algebra[i];
+            }
+        } else if(isupper(algebra[i])) {
+            src_piece = fen_to_piece(algebra[i]) ^ WHITE;
+        }
     }
     target_square = (FILE_A >> (dst_file - 0x61)) & (RANK_1 >> ((dst_rank - 0x31) * 8));
     // narrow source region
     if(src_file) {
-        src_region &= FILE_A >> (dst_file - 0x61);
+        src_region &= FILE_A >> (src_file - 0x61);
     }
+    move->src = src_region & src_pieces(board, target_square, src_piece);
+    move->dst = target_square;
     // printf("active piece %c going to %s\n", piece_letter(src_piece), SQUARE_NAMES[bitscan(target_square)]);
-    // TODO - search for potential sources
 }
