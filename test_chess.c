@@ -470,14 +470,15 @@ void test_parse_algebra()
     assert_board_eq(
         move.src,
         sq_map(b1),
-        "Move disambiguated"
+        "Move disambiguated by file"
     );
     // test  disambiguation by rank
     char ambig_knights_board[] = "1R4QQ/R1R4Q/8/6pP/NP1P/8/NK1k4/8";
+    fen_to_board(ambig_knights_board, &testboard);
     move = parse_algebra(testboard, "N4c3");
     assert_board_eq(
         move.src,
         sq_map(a4),
-        "Move disambiguated"
+        "Move disambiguated by rank"
     );
 }
