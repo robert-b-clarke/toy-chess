@@ -453,8 +453,8 @@ void test_parse_algebra()
     char weird_board[] = "1R4QQ/R1R4Q/8/6pP/5P1P/8/NK1k4/1N1N4";
     Bitboard testboard;
     fen_to_board(weird_board, &testboard);
-    Move move = {};
-    parse_algebra(testboard, "Nc3", &move);
+    Move move;
+    move = parse_algebra(testboard, "Nc3");
     assert_board_eq(
         move.dst,
         sq_map(c3),
@@ -466,7 +466,7 @@ void test_parse_algebra()
         "Ambiguous move"
     );
 
-    parse_algebra(testboard, "Nbc3", &move);
+    move = parse_algebra(testboard, "Nbc3");
     assert_board_eq(
         move.src,
         sq_map(b1),

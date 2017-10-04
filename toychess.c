@@ -702,7 +702,7 @@ uint64_t src_pieces(Bitboard board, uint64_t target, int piece)
 }
 
     
-void parse_algebra(Bitboard board, char *algebra, Move *move)
+Move parse_algebra(Bitboard board, char *algebra)
 {
     /*
      * Generously parse a PGN format algebra statement
@@ -716,6 +716,7 @@ void parse_algebra(Bitboard board, char *algebra, Move *move)
     uint64_t src_region = FULL_BOARD;
     uint64_t target_square = EMPTY_BOARD;
     int i;
+    Move move = {};
     // loop through statement in reverse
     // take last rank and file as destination
     // use earlier rank or file to disambiguate
@@ -740,7 +741,8 @@ void parse_algebra(Bitboard board, char *algebra, Move *move)
     if(src_file) {
         src_region &= FILE_A >> (src_file - 0x61);
     }
-    move->src = src_region & src_pieces(board, target_square, src_piece);
-    move->dst = target_square;
+    move.src = src_region & src_pieces(board, target_square, src_piece);
+    move.dst = target_square;
     // printf("active piece %c going to %s\n", piece_letter(src_piece), SQUARE_NAMES[bitscan(target_square)]);
+    return move;
 }
