@@ -724,8 +724,12 @@ Move parse_algebra(Bitboard board, char *algebra)
     // ignore anything else
     // TODO this is obviously limited!
     for(i = strlen(algebra) - 1; i >= 0; i--) {
-        if(isdigit(algebra[i]) && !dst_rank) {
-            dst_rank = algebra[i];
+        if(isdigit(algebra[i])){
+            if(dst_rank) {
+                src_rank = algebra[i];
+            } else {
+                dst_rank = algebra[i];
+            }
         } else if(algebra[i] >= 0x61 && algebra[i] <= 0x68) {
             if(dst_file) {
                 src_file = algebra[i];
@@ -740,6 +744,9 @@ Move parse_algebra(Bitboard board, char *algebra)
     // narrow source region
     if(src_file) {
         src_region &= FILE_A >> (src_file - 0x61);
+    }
+    if(src_rank) {
+        src_region &= RANK_1 >> ((src_rank - 0x31) * 8);
     }
     move.src = src_region & src_pieces(board, target_square, src_piece);
     move.dst = target_square;
