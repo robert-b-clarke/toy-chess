@@ -47,8 +47,7 @@ typedef struct {
     uint64_t dst;
 } Move;
 
-void empty_board(Bitboard *board);
-void fen_to_board(char *fen, Bitboard *board);
+Bitboard fen_to_board(char *fen);
 void print_board(int *board);
 char piece_letter(int piece);
 void populate_board(Bitboard *board);

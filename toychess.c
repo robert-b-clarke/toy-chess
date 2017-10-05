@@ -75,21 +75,6 @@ char piece_letter(int piece)
 }
 
 
-void empty_board(Bitboard *board)
-{
-    uint64_t empty_row = (uint64_t)0x0000000000000000;
-    board->whites = empty_row;
-    board->moved = empty_row;
-    board->pawns = empty_row;
-    board->rooks = empty_row;
-    board->knights = empty_row;
-    board->bishops = empty_row;
-    board->kings = empty_row;
-    board->pawns = empty_row;
-    board->queens = empty_row;
-}
-
-
 void populate_board(Bitboard *board)
 {
     /*put some pieces on the board*/
@@ -377,7 +362,7 @@ int bitscan ( uint64_t b )
 }
 
 
-void fen_to_board(char *fen, Bitboard *board)
+Bitboard fen_to_board(char *fen)
 {
     /*
      * Parse a string of "Forsyth-Edwards Notation" game state and return a
@@ -385,8 +370,8 @@ void fen_to_board(char *fen, Bitboard *board)
      */
     int rank = 7; // 0 indexed
     int file = 0;
-    // wipe the board to start afresh
-    empty_board(board);
+    // Initialise an empty board
+    Bitboard board = {};
 
     do {
         // if alpha (rnbkqp/RNBKQP) move target west one place
@@ -399,7 +384,7 @@ void fen_to_board(char *fen, Bitboard *board)
             file += (*fen - 0x30);
         } else {
             add_piece_to_board(
-                board,
+                &board,
                 fen_to_piece(*fen),
                 SQUARE_0 >> ((rank * 8) + file)
             );
@@ -409,6 +394,7 @@ void fen_to_board(char *fen, Bitboard *board)
 
     // Currently we throw away the remainder of the FEN string
     // Future support can be added for castling, en-passant, game clock etc
+    return board;
 }
 
 

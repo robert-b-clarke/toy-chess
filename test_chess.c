@@ -264,7 +264,7 @@ void test_fen_to_board()
      */
     char fen[] = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
     Bitboard testboard;
-    fen_to_board(fen, &testboard);
+    testboard = fen_to_board(fen);
     assert_board_eq(
         testboard.pawns,
         (uint64_t)0x00FF00000000FF00,
@@ -310,14 +310,14 @@ void test_in_check()
     char not_in_check[] = "8/8/8/8/2k5/8/8/QK6";
     char check[] = "8/8/8/8/3k4/8/8/QK6";
     // Test a board that is not in check
-    Bitboard testboard = {};
-    fen_to_board(not_in_check, &testboard);
+    Bitboard testboard;
+    testboard = fen_to_board(not_in_check);
     assert_true(
         !in_check(testboard),
         "Correctly detect board is not in check"
     );
     // Test a board that is in check and fail if we don't
-    fen_to_board(check, &testboard);
+    testboard = fen_to_board(check);
     assert_true(
         in_check(testboard),
         "Correctly detect board is in check"
@@ -332,28 +332,28 @@ void test_escape_check()
     char pawn_captures[] = "8/8/2k5/8/p3b3/1np5/P7/K7";
     char pawn_pinned[] = "8/8/2k5/8/r3b3/1np5/P7/K7";
 
-    Bitboard testboard = {};
-    fen_to_board(king_flees, &testboard);
+    Bitboard testboard;
+    testboard = fen_to_board(king_flees);
     assert_true(
         can_escape_check(testboard),
         "correctly determine our king can flee check"
     );
-    fen_to_board(king_trapped, &testboard);
+    testboard = fen_to_board(king_trapped);
     assert_true(
         !can_escape_check(testboard),
         "correctly determine white is mated"
     );
-    fen_to_board(knight_interposes, &testboard);
+    testboard = fen_to_board(knight_interposes);
     assert_true(
         can_escape_check(testboard),
         "correctly determine we can interpose the white Knight"
     );
-    fen_to_board(pawn_captures, &testboard);
+    testboard = fen_to_board(pawn_captures);
     assert_true(
         can_escape_check(testboard),
         "correctly determine we can interpose the white Knight"
     );
-    fen_to_board(pawn_pinned, &testboard);
+    testboard = fen_to_board(pawn_pinned);
     assert_true(
         !can_escape_check(testboard),
         "We can't escape check as the white pawn is \"pinned\" by rook"
@@ -402,7 +402,7 @@ void test_src_pieces()
     // https://chess.stackexchange.com/questions/1817/how-are-pgn-ambiguities-handled
     char weird_board[] = "1R4QQ/R1R4Q/8/6pP/5P1P/8/NK1k4/1N1N4";
     Bitboard testboard;
-    fen_to_board(weird_board, &testboard);
+    testboard = fen_to_board(weird_board);
     print_board(to_8x8(testboard));
     // test ambiguous pawn moves
     uint64_t srcs = src_pieces(testboard, sq_map(g5), PAWN);
@@ -452,7 +452,7 @@ void test_parse_algebra()
 {
     char weird_board[] = "1R4QQ/R1R4Q/8/6pP/5P1P/8/NK1k4/1N1N4";
     Bitboard testboard;
-    fen_to_board(weird_board, &testboard);
+    testboard = fen_to_board(weird_board);
     Move move;
     move = parse_algebra(testboard, "Nc3");
     assert_board_eq(
@@ -474,7 +474,7 @@ void test_parse_algebra()
     );
     // test  disambiguation by rank
     char ambig_knights_board[] = "1R4QQ/R1R4Q/8/6pP/NP1P/8/NK1k4/8";
-    fen_to_board(ambig_knights_board, &testboard);
+    testboard = fen_to_board(ambig_knights_board);
     move = parse_algebra(testboard, "N4c3");
     assert_board_eq(
         move.src,
