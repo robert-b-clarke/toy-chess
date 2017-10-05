@@ -9,6 +9,8 @@
 #define KING 6
 #define WHITE 8
 
+#define START_POS_FEN "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"
+
 enum squares {
     a1, b1, c1, d1, e1, f1, g1, h1,
     a2, b2, c2, d2, e2, f2, g2, h2,
@@ -49,7 +51,6 @@ typedef struct {
 Bitboard fen_to_board(char *fen);
 void print_board(int *board);
 char piece_letter(int piece);
-void populate_board(Bitboard *board);
 void rotate_board_180(Bitboard *board);
 int * to_8x8(Bitboard board);
 int population_count (uint64_t bitlayer);

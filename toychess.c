@@ -75,21 +75,6 @@ char piece_letter(int piece)
 }
 
 
-void populate_board(Bitboard *board)
-{
-    /*put some pieces on the board*/
-    board->pawns = (uint64_t)0x00FF00000000FF00;
-    board->rooks = (uint64_t)0x8100000000000081;
-    board->knights = (uint64_t)0x4200000000000042;
-    board->bishops = (uint64_t)0x2400000000000024;
-    board->kings = (uint64_t)0x0800000000000008;
-    board->queens = (uint64_t)0x1000000000000010;
-    board->whites = (uint64_t)0xFFFF000000000000;
-}
-
-
-
-
 void rotate_board_180(Bitboard *board)
 {
     /*rotate the entire board 180 degrees*/

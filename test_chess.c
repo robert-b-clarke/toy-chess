@@ -175,8 +175,7 @@ void test_rotate_180()
 void test_rotate_board()
 {
     /* rotate an entire board 180 degrees */
-    Bitboard testboard = {};
-    populate_board(&testboard);
+    Bitboard testboard = fen_to_board(START_POS_FEN);
     rotate_board_180(&testboard);
     /* white queen should have moved to E8 */
     assert_board_eq(
@@ -262,9 +261,8 @@ void test_fen_to_board()
      * Test that a Forsyth-Edwards Notation game serialization can be unpacked
      * into a board struct
      */
-    char fen[] = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
     Bitboard testboard;
-    testboard = fen_to_board(fen);
+    testboard = fen_to_board(START_POS_FEN);
     assert_board_eq(
         testboard.pawns,
         (uint64_t)0x00FF00000000FF00,
