@@ -19,28 +19,32 @@ const uint64_t LOWEST_SQUARE = (uint64_t)0x0000000000000001;
 const uint64_t SQUARE_0 = (uint64_t)0x8000000000000000;
 const uint64_t EMPTY_BOARD = (uint64_t)0x0000000000000000;
 const uint64_t FULL_BOARD = (uint64_t)0xFFFFFFFFFFFFFFFF;
+const uint64_t WHITE_SQUARES = (uint64_t)0x55AA55AA55AA55AA;
 
 
-void print_board(int *board)
+void print_board(Bitboard board)
 {
-    /* print a board to the terminal. expects 8x8 format, taking bottom right
+    /* print a board to the terminal.
      * as square 0 */
     int file;
     int rank;
     int piece;
+    uint64_t target;
+
     printf("\e[39m\e[49m");
     printf(" ABCDEFGH\n");
     for (rank=0; rank<8; rank++) {
         printf("\e[39m\e[49m");
         printf("%d", 8 - rank);
         for (file=0; file<8; file++) {
+            target = SQUARE_0 >> (63 - ((rank * 8) + (7-file)));
             /* choose square background color */
-            if ((rank + file) % 2 == 1) {
-                printf("\e[45m");
-            } else {
+            if (target & WHITE_SQUARES) {
                 printf("\e[46m");
+            } else {
+                printf("\e[45m");
             }
-            piece = board[63 - ((rank * 8) + (7-file))];
+            piece = remove_piece(&board, target);
             if ((piece & WHITE) != 0) {
                 printf("\e[97m");
             } else {
@@ -87,41 +91,6 @@ void rotate_board_180(Bitboard *board)
     board->whites = rotate_180(board->whites);
 }
 
-
-int * to_8x8(Bitboard board)
-{
-    /* convert bit board into 8x8 hex format for display */
-    uint64_t target_piece = SQUARE_0;
-    int i;
-    int *board_8x8 = malloc(sizeof(int) * 64);
-    if (!board_8x8) {
-        fprintf(stderr, "Out of memory\n");
-        exit(EXIT_FAILURE);
-    }
-    for (i=0; i < 64; i++) {
-        int piece = 0;
-        /*target_piece = (uint64_t)0x01 << i;*/
-        if (board.pawns & target_piece) {
-            piece = PAWN;
-        }  else if (board.rooks & target_piece) {
-            piece = ROOK;
-        }  else if (board.knights & target_piece) {
-            piece = KNIGHT;
-        }  else if (board.bishops & target_piece) {
-            piece = BISHOP;
-        }  else if (board.queens & target_piece) {
-            piece = QUEEN;
-        }  else if (board.kings & target_piece) {
-            piece = KING;
-        }
-        if (board.whites & target_piece) {
-            piece = piece | WHITE;
-        }
-        board_8x8[i] = piece;
-        target_piece >>= 1;
-    }
-    return board_8x8;
-}
 
 int population_count(uint64_t bitlayer)
 {

@@ -299,7 +299,7 @@ void test_fen_to_board()
         "bishops initialised correctly"
     );
     // print out the board for good measure
-    print_board(to_8x8(testboard));
+    print_board(testboard);
 }
 
 
@@ -401,7 +401,7 @@ void test_src_pieces()
     char weird_board[] = "1R4QQ/R1R4Q/8/6pP/5P1P/8/NK1k4/1N1N4";
     Bitboard testboard;
     testboard = fen_to_board(weird_board);
-    print_board(to_8x8(testboard));
+    print_board(testboard);
     // test ambiguous pawn moves
     uint64_t srcs = src_pieces(testboard, sq_map(g5), PAWN);
     assert_board_eq(

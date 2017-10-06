@@ -49,10 +49,9 @@ typedef struct {
 } Move;
 
 Bitboard fen_to_board(char *fen);
-void print_board(int *board);
+void print_board(Bitboard board);
 char piece_letter(int piece);
 void rotate_board_180(Bitboard *board);
-int * to_8x8(Bitboard board);
 int population_count (uint64_t bitlayer);
 uint64_t occupied_squares(Bitboard board);
 uint64_t shift_n( uint64_t bitlayer );
