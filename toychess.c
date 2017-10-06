@@ -6,6 +6,7 @@
 #include <ctype.h>
 #include "toychess.h"
 
+#define UNUSED(x) (void)(x)
 
 /* const bitmasks for bitboard */
 const uint64_t FILE_A = (uint64_t)0x8080808080808080;
@@ -145,8 +146,9 @@ uint64_t queen_attacks(uint64_t queens, uint64_t enemies, uint64_t allies)
 }
 
 
-uint64_t king_attacks(uint64_t kings, uint64_t allies)
+uint64_t king_attacks(uint64_t kings, uint64_t enemies, uint64_t allies)
 {
+    UNUSED(enemies);
     uint64_t moves = shift_n(kings) | shift_ne(kings) | shift_e(kings);
     moves |= shift_se(kings) | shift_s(kings) | shift_sw(kings);
     moves |= shift_w(kings) | shift_nw(kings);
@@ -440,7 +442,7 @@ uint64_t standard_attacks(Bitboard board)
     attacks |= queen_attacks(board.queens & allies, enemies, allies);
     attacks |= bishop_attacks(board.bishops & allies, enemies, allies);
     attacks |= knight_attacks(board.knights & allies, allies);
-    attacks |= king_attacks(board.kings & allies, allies);
+    attacks |= king_attacks(board.kings & allies, enemies, allies);
     return attacks;
 }
 
@@ -494,7 +496,7 @@ int legal_moves_for_board(Bitboard board) {
     moves += legal_moves(
         board,
         board.kings & allies,
-        king_attacks(board.kings & board.whites, allies),
+        king_attacks(board.kings & board.whites, enemies, allies),
         KING
     );
     
@@ -642,7 +644,7 @@ uint64_t src_pieces(Bitboard board, uint64_t target, int piece)
             return srcs;
         case KING:
             // only one king
-            if(king_attacks(board.kings & allies, allies) & target) {
+            if(king_attacks(board.kings & allies, enemies, allies) & target) {
                 return board.kings & allies;
             }
     }
