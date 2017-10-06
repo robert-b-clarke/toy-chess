@@ -490,21 +490,30 @@ bool can_escape_check(Bitboard board)
 }
 
 
-void remove_piece(Bitboard *b, uint64_t t) {
-    // blank a square
+int remove_piece(Bitboard *b, uint64_t t) {
+    // blank a square and return the piece that resides there
+    int white_flag = b->whites & t ? WHITE : 0;
     if(b->kings & t) {
         b->kings ^= t;
+        return KING | white_flag;
     } else if(b->queens & t) {
         b->queens ^= t;
+        return QUEEN | white_flag;
     } else if(b->rooks & t) {
         b->rooks ^= t;
+        return ROOK | white_flag;
     } else if(b->bishops & t) {
         b->bishops ^= t;
+        return BISHOP | white_flag;
     } else if(b->knights & t) {
         b->knights ^= t;
+        return KNIGHT | white_flag;
     } else if(b->pawns & t) {
         b->pawns ^= t;
+        return PAWN | white_flag;
     }
+    // square is empty
+    return 0;
 }
 
 

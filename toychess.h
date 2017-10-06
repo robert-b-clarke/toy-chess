@@ -80,7 +80,7 @@ void add_piece_to_board(Bitboard *board, int piece, uint64_t target);
 bool in_check(Bitboard board);
 uint64_t standard_attacks(Bitboard board);
 bool can_escape_check(Bitboard board);
-void remove_piece(Bitboard *b, uint64_t t);
+int remove_piece(Bitboard *b, uint64_t t);
 int legal_moves(Bitboard board, uint64_t origin, uint64_t targets, int piece);
 int legal_moves_for_board(Bitboard board);
 uint64_t src_pieces(Bitboard board, uint64_t target, int piece);
