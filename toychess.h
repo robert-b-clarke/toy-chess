@@ -68,7 +68,7 @@ uint64_t rook_attacks(uint64_t rooks, uint64_t enemies, uint64_t allies);
 uint64_t bishop_attacks(uint64_t bishops, uint64_t enemies, uint64_t allies);
 uint64_t queen_attacks(uint64_t queens, uint64_t enemies, uint64_t allies);
 uint64_t king_attacks(uint64_t kings, uint64_t enemies, uint64_t allies);
-uint64_t knight_attacks(uint64_t knights, uint64_t allies);
+uint64_t knight_attacks(uint64_t knights, uint64_t enemies, uint64_t allies);
 uint64_t pawn_attacks(uint64_t pawns, uint64_t allies);
 uint64_t sliding_attack( uint64_t (*slider)(uint64_t), uint64_t attackers, uint64_t enemies, uint64_t allies);
 uint64_t sq_bit(char file, int rank);

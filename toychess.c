@@ -157,7 +157,7 @@ uint64_t king_attacks(uint64_t kings, uint64_t enemies, uint64_t allies)
 }
 
 
-uint64_t knight_attacks(uint64_t knights, uint64_t allies)
+uint64_t knight_attacks(uint64_t knights, uint64_t enemies, uint64_t allies)
 {
 /*
  * Shift Knights to possible destinations, we don't care about enemies, but
@@ -175,6 +175,7 @@ uint64_t knight_attacks(uint64_t knights, uint64_t allies)
  *             -17  -15
  *          soSoWe    soSoEa
 */
+    UNUSED(enemies);
     uint64_t moves = (knights & ~FILE_H) >> 17;
     moves |= (knights & ~FILE_GH) >> 10;
     moves |= (knights & ~FILE_GH) << 6;
@@ -441,7 +442,7 @@ uint64_t standard_attacks(Bitboard board)
     attacks |= rook_attacks(board.rooks & allies, enemies, allies);
     attacks |= queen_attacks(board.queens & allies, enemies, allies);
     attacks |= bishop_attacks(board.bishops & allies, enemies, allies);
-    attacks |= knight_attacks(board.knights & allies, allies);
+    attacks |= knight_attacks(board.knights & allies, enemies, allies);
     attacks |= king_attacks(board.kings & allies, enemies, allies);
     return attacks;
 }
@@ -539,7 +540,7 @@ int legal_moves_for_board(Bitboard board) {
         moves += legal_moves(
             board,
             next_piece,
-            knight_attacks(next_piece, allies),
+            knight_attacks(next_piece, enemies, allies),
             KNIGHT
         );
     }
@@ -610,7 +611,7 @@ uint64_t src_pieces(Bitboard board, uint64_t target, int piece)
             remaining_pieces = board.knights & allies;
             while(population_count(remaining_pieces) > 0) {
                 remaining_pieces = delete_ls1b(remaining_pieces, &next_piece);
-                if(knight_attacks(next_piece, allies) & target) {
+                if(knight_attacks(next_piece, enemies, allies) & target) {
                     srcs |= next_piece;
                 }
             }

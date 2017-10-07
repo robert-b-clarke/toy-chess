@@ -137,7 +137,7 @@ void test_knight_attacks()
     uint64_t attacks = sq_map(f6) | sq_map(g5) | sq_map(g3) | sq_map(f2);
     attacks |= sq_map(d2) | sq_map(c3) | sq_map(c5) | sq_map(d6);
     assert_board_eq(
-        knight_attacks(knights, EMPTY_BOARD), 
+        knight_attacks(knights, EMPTY_BOARD, EMPTY_BOARD), 
         attacks, 
         "expected knight attacks in open play"
     );
