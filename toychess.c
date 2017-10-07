@@ -115,7 +115,8 @@ uint64_t pawn_moves(uint64_t pawns, uint64_t enemies, uint64_t allies)
 {
     uint64_t occupied = enemies | allies;
     uint64_t moves = shift_n(pawns & RANK_2) & ~occupied;
-    return shift_n(moves | pawns) & ~occupied;
+    moves |= shift_n(moves | pawns) & ~occupied;
+    return moves | pawn_attacks(pawns, enemies);
 }
 
 
@@ -550,8 +551,7 @@ int legal_moves_for_board(Bitboard board) {
         moves += legal_moves(
             board,
             next_piece,
-            pawn_moves(next_piece, enemies, allies) 
-                | pawn_attacks(next_piece, enemies),
+            pawn_moves(next_piece, enemies, allies),
             PAWN
         );
     }
@@ -601,8 +601,7 @@ uint64_t src_pieces(Bitboard board, uint64_t target, int piece)
             remaining_pieces = board.pawns & allies;
             while(population_count(remaining_pieces) > 0) {
                 remaining_pieces = delete_ls1b(remaining_pieces, &next_piece);
-                if((pawn_moves(next_piece, enemies, allies)
-                    | pawn_attacks(next_piece, enemies)) & target) {
+                if(pawn_moves(next_piece, enemies, allies) & target) {
                     srcs |= next_piece;
                 }
             }
