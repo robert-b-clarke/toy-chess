@@ -48,6 +48,10 @@ typedef struct {
     uint64_t dst;
 } Move;
 
+// typedef for where we need a function pointer
+typedef uint64_t (*PieceMover)(uint64_t pieces, uint64_t enemies, uint64_t allies);
+
+
 Bitboard fen_to_board(char *fen);
 void print_board(Bitboard board);
 char piece_letter(int piece);
@@ -71,6 +75,7 @@ uint64_t king_attacks(uint64_t kings, uint64_t enemies, uint64_t allies);
 uint64_t knight_attacks(uint64_t knights, uint64_t enemies, uint64_t allies);
 uint64_t pawn_attacks(uint64_t pawns, uint64_t allies);
 uint64_t sliding_attack( uint64_t (*slider)(uint64_t), uint64_t attackers, uint64_t enemies, uint64_t allies);
+PieceMover mover_func(int piece);
 uint64_t sq_bit(char file, int rank);
 uint64_t delete_ls1b(uint64_t bitlayer, uint64_t *deleted_bit);
 int bitscan( uint64_t b );

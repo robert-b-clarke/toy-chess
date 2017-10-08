@@ -215,6 +215,25 @@ uint64_t sliding_attack(
 }
 
 
+PieceMover mover_func(int piece) {
+    int uncoloured_piece = piece & ~WHITE;
+    switch(uncoloured_piece) {
+        case KNIGHT:
+            return knight_attacks;
+        case BISHOP:
+            return bishop_attacks;
+        case ROOK:
+            return rook_attacks;
+        case QUEEN:
+            return queen_attacks;
+        case KING:
+            return king_attacks;
+        default:
+            return pawn_moves;
+    }
+}
+
+
 uint64_t shift_n( uint64_t bitlayer )
 {
     return bitlayer >> 8;
@@ -594,59 +613,35 @@ uint64_t src_pieces(Bitboard board, uint64_t target, int piece)
     uint64_t remaining_pieces;
     uint64_t next_piece = EMPTY_BOARD;
     uint64_t srcs = EMPTY_BOARD;
-    // TODO - as with legal_moves func there is a lot of cargo cult here
-    // a refactor is required
+    // find a function which will calculate moves for this piece
+    PieceMover piece_mover = mover_func(piece);
+    // get the pieces
     switch(piece) {
         case PAWN:
             remaining_pieces = board.pawns & allies;
-            while(population_count(remaining_pieces) > 0) {
-                remaining_pieces = delete_ls1b(remaining_pieces, &next_piece);
-                if(pawn_moves(next_piece, enemies, allies) & target) {
-                    srcs |= next_piece;
-                }
-            }
-            return srcs;
+            break;
         case KNIGHT:
             remaining_pieces = board.knights & allies;
-            while(population_count(remaining_pieces) > 0) {
-                remaining_pieces = delete_ls1b(remaining_pieces, &next_piece);
-                if(knight_attacks(next_piece, enemies, allies) & target) {
-                    srcs |= next_piece;
-                }
-            }
-            return srcs;
+            break;
         case ROOK:
             remaining_pieces = board.rooks & allies;
-            while(population_count(remaining_pieces) > 0) {
-                remaining_pieces = delete_ls1b(remaining_pieces, &next_piece);
-                if(rook_attacks(next_piece, enemies, allies)) {
-                    srcs |= next_piece;
-                }
-            }
-            return srcs;
+            break;
         case QUEEN:
             remaining_pieces = board.queens & allies;
-            while(population_count(remaining_pieces) > 0) {
-                remaining_pieces = delete_ls1b(remaining_pieces, &next_piece);
-                if(queen_attacks(next_piece, enemies, allies)) {
-                    srcs |= next_piece;
-                }
-            }
-            return srcs;
+            break;
         case BISHOP:
             remaining_pieces = board.bishops & allies;
-            while(population_count(remaining_pieces) > 0) {
-                remaining_pieces = delete_ls1b(remaining_pieces, &next_piece);
-                if(bishop_attacks(next_piece, enemies, allies)) {
-                    srcs |= next_piece;
-                }
-            }
-            return srcs;
+            break;
         case KING:
-            // only one king
-            if(king_attacks(board.kings & allies, enemies, allies) & target) {
-                return board.kings & allies;
-            }
+            remaining_pieces = board.kings & allies;
+            break;
+    }
+    // execute the moves for each occurence of the piece
+    while(population_count(remaining_pieces) > 0) {
+        remaining_pieces = delete_ls1b(remaining_pieces, &next_piece);
+        if(piece_mover(next_piece, enemies, allies) & target) {
+            srcs |= next_piece;
+        }
     }
     return srcs;
 }
