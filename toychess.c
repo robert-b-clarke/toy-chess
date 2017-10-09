@@ -516,8 +516,7 @@ int legal_moves_for_board(Bitboard board) {
     moves += legal_moves(
         board,
         board.kings & allies,
-        king_attacks(board.kings & board.whites, enemies, allies),
-        KING
+        king_attacks(board.kings & board.whites, enemies, allies)
     );
     
     uint64_t next_piece = EMPTY_BOARD;
@@ -529,8 +528,7 @@ int legal_moves_for_board(Bitboard board) {
         moves += legal_moves(
             board,
             next_piece,
-            queen_attacks(next_piece, enemies, allies),
-            QUEEN
+            queen_attacks(next_piece, enemies, allies)
         );
     }
     remaining_pieces = board.rooks & allies;
@@ -539,8 +537,7 @@ int legal_moves_for_board(Bitboard board) {
         moves += legal_moves(
             board,
             next_piece,
-            rook_attacks(next_piece, enemies, allies),
-            ROOK
+            rook_attacks(next_piece, enemies, allies)
         );
     }
     remaining_pieces = board.bishops & allies;
@@ -549,8 +546,7 @@ int legal_moves_for_board(Bitboard board) {
         moves += legal_moves(
             board,
             next_piece,
-            bishop_attacks(next_piece, enemies, allies),
-            BISHOP
+            bishop_attacks(next_piece, enemies, allies)
         );
     }
     remaining_pieces = board.knights & allies;
@@ -559,8 +555,7 @@ int legal_moves_for_board(Bitboard board) {
         moves += legal_moves(
             board,
             next_piece,
-            knight_attacks(next_piece, enemies, allies),
-            KNIGHT
+            knight_attacks(next_piece, enemies, allies)
         );
     }
     remaining_pieces = board.pawns & allies;
@@ -569,35 +564,38 @@ int legal_moves_for_board(Bitboard board) {
         moves += legal_moves(
             board,
             next_piece,
-            pawn_moves(next_piece, enemies, allies),
-            PAWN
+            pawn_moves(next_piece, enemies, allies)
         );
     }
     return moves;
 }
 
 
+void apply_move(Bitboard *board_ref, const Move move) {
+    remove_piece(board_ref, move.dst);
+    int src_piece = remove_piece(board_ref, move.src);
+    add_piece_to_board(board_ref, src_piece, move.dst);
+}
 
-int legal_moves(Bitboard board, uint64_t origin, uint64_t targets, int piece)
+
+int legal_moves(Bitboard board, uint64_t origin, uint64_t targets)
 {
     int moves = 0;
     uint64_t next_target;
     uint64_t remaining_targets;
     remaining_targets = delete_ls1b(targets, &next_target);
     if(remaining_targets) {
-        moves += legal_moves(board, origin, remaining_targets, piece);
+        moves += legal_moves(board, origin, remaining_targets);
     }
     // determine if we're capturing a piece clear it first
-    remove_piece(&board, next_target);
-    remove_piece(&board, origin);
-    add_piece_to_board(&board, piece | WHITE, next_target);
+    Move next_move = {};
+    next_move.src = origin;
+    next_move.dst = next_target;
+    apply_move(&board, next_move);
     // assess whether the board is now in check
     rotate_board_180( &board );
     board.whites = ~board.whites;
     if(!in_check(board)) {
-        // printf("legal move %c%s\n",
-        //     piece_letter(piece),
-        //     SQUARE_NAMES[bitscan(next_target)]);
         moves ++;
     }
     return moves;
