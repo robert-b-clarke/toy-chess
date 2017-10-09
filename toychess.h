@@ -87,5 +87,6 @@ bool can_escape_check(Bitboard board);
 int remove_piece(Bitboard *b, uint64_t t);
 int legal_moves(Bitboard board, uint64_t origin, uint64_t targets, int piece);
 int legal_moves_for_board(Bitboard board);
+uint64_t squares_with_piece(Bitboard board, int piece);
 uint64_t src_pieces(Bitboard board, uint64_t target, int piece);
 Move parse_algebra(Bitboard board, char *algebra);

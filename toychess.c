@@ -60,8 +60,7 @@ void print_board(Bitboard board)
 
 char piece_letter(int piece) 
 {
-    int uncoloured_piece = piece & ~WHITE;
-    switch(uncoloured_piece) {
+    switch(piece & ~WHITE) {
         case PAWN:
             return 'p';
         case KNIGHT:
@@ -605,6 +604,28 @@ int legal_moves(Bitboard board, uint64_t origin, uint64_t targets, int piece)
 }
 
 
+uint64_t squares_with_piece(Bitboard board, int piece)
+{
+    // return all the squares with a piece, regardless of colour
+    switch(piece & ~WHITE) {
+        case PAWN:
+            return board.pawns;
+        case KNIGHT:
+            return board.knights;
+        case ROOK:
+            return board.rooks;
+        case QUEEN:
+            return board.queens;
+        case BISHOP:
+            return board.bishops;
+        case KING:
+            return board.kings;
+        default:
+            return EMPTY_BOARD;
+    }
+}
+
+
 uint64_t src_pieces(Bitboard board, uint64_t target, int piece)
 {
     // return the locations of the pieces which can reach a particular square
@@ -616,26 +637,7 @@ uint64_t src_pieces(Bitboard board, uint64_t target, int piece)
     // find a function which will calculate moves for this piece
     PieceMover piece_mover = mover_func(piece);
     // get the pieces
-    switch(piece) {
-        case PAWN:
-            remaining_pieces = board.pawns & allies;
-            break;
-        case KNIGHT:
-            remaining_pieces = board.knights & allies;
-            break;
-        case ROOK:
-            remaining_pieces = board.rooks & allies;
-            break;
-        case QUEEN:
-            remaining_pieces = board.queens & allies;
-            break;
-        case BISHOP:
-            remaining_pieces = board.bishops & allies;
-            break;
-        case KING:
-            remaining_pieces = board.kings & allies;
-            break;
-    }
+    remaining_pieces = squares_with_piece(board, piece) & allies;
     // execute the moves for each occurence of the piece
     while(population_count(remaining_pieces) > 0) {
         remaining_pieces = delete_ls1b(remaining_pieces, &next_piece);
