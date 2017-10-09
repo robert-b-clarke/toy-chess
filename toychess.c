@@ -508,65 +508,36 @@ int remove_piece(Bitboard *b, uint64_t t) {
 }
 
 
-int legal_moves_for_board(Bitboard board) {
-    int moves = 0;
+int legal_moves_for_piece(Bitboard board, int piece)
+{
+    // count the legal moves for a given piece on the board
     uint64_t allies = occupied_squares(board) & board.whites;
     uint64_t enemies = occupied_squares(board) & ~board.whites;
-    // there's only ever one king
-    moves += legal_moves(
-        board,
-        board.kings & allies,
-        king_attacks(board.kings & board.whites, enemies, allies)
-    );
-    
+    int moves = 0;
+    PieceMover piece_mover = mover_func(piece);
+    // get the pieces
     uint64_t next_piece = EMPTY_BOARD;
-    uint64_t remaining_pieces = board.queens & allies;
-    // TODO - hideous cargo cult of code for executing available moves
-    // use as a basis for testing then refactor to something better
+    uint64_t remaining_pieces = squares_with_piece(board, piece) & allies;
     while(population_count(remaining_pieces) > 0) {
         remaining_pieces = delete_ls1b(remaining_pieces, &next_piece);
         moves += legal_moves(
             board,
             next_piece,
-            queen_attacks(next_piece, enemies, allies)
+            piece_mover(next_piece, enemies, allies)
         );
     }
-    remaining_pieces = board.rooks & allies;
-    while(population_count(remaining_pieces) > 0) {
-        remaining_pieces = delete_ls1b(remaining_pieces, &next_piece);
-        moves += legal_moves(
-            board,
-            next_piece,
-            rook_attacks(next_piece, enemies, allies)
-        );
-    }
-    remaining_pieces = board.bishops & allies;
-    while(population_count(remaining_pieces) > 0) {
-        remaining_pieces = delete_ls1b(remaining_pieces, &next_piece);
-        moves += legal_moves(
-            board,
-            next_piece,
-            bishop_attacks(next_piece, enemies, allies)
-        );
-    }
-    remaining_pieces = board.knights & allies;
-    while(population_count(remaining_pieces) > 0) {
-        remaining_pieces = delete_ls1b(remaining_pieces, &next_piece);
-        moves += legal_moves(
-            board,
-            next_piece,
-            knight_attacks(next_piece, enemies, allies)
-        );
-    }
-    remaining_pieces = board.pawns & allies;
-    while(population_count(remaining_pieces) > 0) {
-        remaining_pieces = delete_ls1b(remaining_pieces, &next_piece);
-        moves += legal_moves(
-            board,
-            next_piece,
-            pawn_moves(next_piece, enemies, allies)
-        );
-    }
+    return moves;
+}
+
+
+int legal_moves_for_board(Bitboard board) {
+    // count the moves available for the whole board
+    int moves = legal_moves_for_piece(board, KING)
+        + legal_moves_for_piece(board, QUEEN)
+        + legal_moves_for_piece(board, ROOK)
+        + legal_moves_for_piece(board, BISHOP)
+        + legal_moves_for_piece(board, KNIGHT)
+        + legal_moves_for_piece(board, PAWN);
     return moves;
 }
 
