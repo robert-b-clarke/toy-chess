@@ -103,14 +103,14 @@ int population_count(uint64_t bitlayer)
 }
 
 
-uint64_t occupied_squares(Bitboard board)
+uint64_t occupied_squares(const Bitboard board)
 {
     /* any square with a piece on it */
     return board.pawns | board.rooks | board.knights | board.bishops | board.kings | board.queens;
 }
 
 
-uint64_t pawn_moves(uint64_t pawns, uint64_t enemies, uint64_t allies)
+uint64_t pawn_moves(const uint64_t pawns, const uint64_t enemies, const uint64_t allies)
 {
     uint64_t occupied = enemies | allies;
     uint64_t moves = shift_n(pawns & RANK_2) & ~occupied;
@@ -119,7 +119,7 @@ uint64_t pawn_moves(uint64_t pawns, uint64_t enemies, uint64_t allies)
 }
 
 
-uint64_t rook_attacks(uint64_t rooks, uint64_t enemies, uint64_t allies)
+uint64_t rook_attacks(const uint64_t rooks, const uint64_t enemies, const uint64_t allies)
 {
     /* sliding attack to the north, south, east and west */
     uint64_t moves = sliding_attack(shift_n, rooks, enemies, allies);
@@ -129,7 +129,7 @@ uint64_t rook_attacks(uint64_t rooks, uint64_t enemies, uint64_t allies)
 }
 
 
-uint64_t bishop_attacks(uint64_t bishops, uint64_t enemies, uint64_t allies)
+uint64_t bishop_attacks(const uint64_t bishops, const uint64_t enemies, const uint64_t allies)
 {
     uint64_t moves = sliding_attack(shift_ne, bishops, enemies, allies);
     moves |= sliding_attack(shift_nw, bishops, enemies, allies);
@@ -138,7 +138,7 @@ uint64_t bishop_attacks(uint64_t bishops, uint64_t enemies, uint64_t allies)
 }
 
 
-uint64_t queen_attacks(uint64_t queens, uint64_t enemies, uint64_t allies)
+uint64_t queen_attacks(const uint64_t queens, const uint64_t enemies, const uint64_t allies)
 {
     /* queen attacks == bishop_attacks | rook_attacks */
     uint64_t moves = bishop_attacks(queens, enemies, allies);
@@ -146,7 +146,7 @@ uint64_t queen_attacks(uint64_t queens, uint64_t enemies, uint64_t allies)
 }
 
 
-uint64_t king_attacks(uint64_t kings, uint64_t enemies, uint64_t allies)
+uint64_t king_attacks(const uint64_t kings, const uint64_t enemies, const uint64_t allies)
 {
     UNUSED(enemies);
     uint64_t moves = shift_n(kings) | shift_ne(kings) | shift_e(kings);
@@ -188,7 +188,7 @@ uint64_t knight_attacks(uint64_t knights, uint64_t enemies, uint64_t allies)
 }
 
 
-uint64_t pawn_attacks(uint64_t pawns, uint64_t enemies)
+uint64_t pawn_attacks(const uint64_t pawns, const uint64_t enemies)
 {
     /* attack to the ne or nw, only where enemies present */
     uint64_t moves = shift_ne(pawns) | shift_nw(pawns);
@@ -199,8 +199,8 @@ uint64_t pawn_attacks(uint64_t pawns, uint64_t enemies)
 uint64_t sliding_attack(
     uint64_t (*slider)(uint64_t),
     uint64_t attackers,
-    uint64_t enemies,
-    uint64_t allies) 
+    const uint64_t enemies,
+    const uint64_t allies)
 {
     /* move attacking pieces with slider. Stop at allies, or after
      * enemies */
@@ -214,7 +214,7 @@ uint64_t sliding_attack(
 }
 
 
-PieceMover mover_func(int piece) {
+PieceMover mover_func(const int piece) {
     int uncoloured_piece = piece & ~WHITE;
     switch(uncoloured_piece) {
         case KNIGHT:
@@ -233,49 +233,49 @@ PieceMover mover_func(int piece) {
 }
 
 
-uint64_t shift_n( uint64_t bitlayer )
+uint64_t shift_n(const uint64_t bitlayer)
 {
     return bitlayer >> 8;
 }
 
 
-uint64_t shift_ne( uint64_t bitlayer )
+uint64_t shift_ne(const uint64_t bitlayer)
 {
     return (bitlayer & ~FILE_A) >> 7;
 }
 
 
-uint64_t shift_nw( uint64_t bitlayer )
+uint64_t shift_nw(const uint64_t bitlayer)
 {
     return (bitlayer & ~FILE_H) >> 9;
 }
 
 
-uint64_t shift_s( uint64_t bitlayer )
+uint64_t shift_s(const uint64_t bitlayer)
 {
     return bitlayer << 8;
 }
 
 
-uint64_t shift_e( uint64_t bitlayer ) 
+uint64_t shift_e(const uint64_t bitlayer)
 {
     return (bitlayer & ~FILE_A) << 1;
 }
 
 
-uint64_t shift_se( uint64_t bitlayer )
+uint64_t shift_se(const uint64_t bitlayer)
 {
     return (bitlayer & ~FILE_H) << 7;
 }
 
 
-uint64_t shift_sw( uint64_t bitlayer )
+uint64_t shift_sw(const uint64_t bitlayer)
 {
     return (bitlayer & ~FILE_A) << 9;
 }
 
 
-uint64_t shift_w( uint64_t bitlayer )
+uint64_t shift_w(const uint64_t bitlayer)
 {
     return (bitlayer & ~FILE_H) >> 1;
 }
@@ -315,14 +315,14 @@ uint64_t sq_bit(char file, int rank)
 }
 
 
-uint64_t delete_ls1b(uint64_t bitlayer, uint64_t *deleted_bit)
+uint64_t delete_ls1b(const uint64_t bitlayer, uint64_t *deleted_bit)
 {
     uint64_t without_ls1b = bitlayer & (bitlayer - 1);
     *deleted_bit = bitlayer ^ without_ls1b;
     return without_ls1b;
 }
 
-int bitscan ( uint64_t b )
+int bitscan (const uint64_t b)
 {
     // do binary search, this method with the fixed bitmasks will only work
     // for a single bit, not as a generic leading zero count
@@ -373,7 +373,7 @@ Bitboard fen_to_board(char *fen)
 }
 
 
-int fen_to_piece(int fen_char)
+int fen_to_piece(const int fen_char)
 {
     // accept a single char and convert to a nibble using piece constants
     int piece;
@@ -404,14 +404,13 @@ int fen_to_piece(int fen_char)
 }
 
 
-void add_piece_to_board(Bitboard *board, int piece, uint64_t target)
+void add_piece_to_board(Bitboard *board, const int piece, const uint64_t target)
 {
     // Add a piece nibble to a board
     if(piece & WHITE) {
         board->whites |= target;
-        piece = piece ^ WHITE;
     }
-    switch(piece) {
+    switch(piece & ~WHITE) {
         case PAWN:
             board->pawns |= target;
             break;
@@ -434,7 +433,7 @@ void add_piece_to_board(Bitboard *board, int piece, uint64_t target)
 }
 
 
-bool in_check(Bitboard board)
+bool in_check(const Bitboard board)
 {
     /*
      * return true if white is checking black
@@ -448,7 +447,7 @@ bool in_check(Bitboard board)
 }
 
 
-uint64_t standard_attacks(Bitboard board)
+uint64_t standard_attacks(const Bitboard board)
 {
     /*
      * union of all squares white can attack
@@ -467,7 +466,7 @@ uint64_t standard_attacks(Bitboard board)
 }
 
 
-bool can_escape_check(Bitboard board)
+bool can_escape_check(const Bitboard board)
 {
     /*
      * Test whether we can escape from check, and if we can return true
@@ -481,7 +480,7 @@ bool can_escape_check(Bitboard board)
 }
 
 
-int remove_piece(Bitboard *b, uint64_t t) {
+int remove_piece(Bitboard *b, const uint64_t t) {
     // blank a square and return the piece that resides there
     int white_flag = b->whites & t ? WHITE : 0;
     if(b->kings & t) {
@@ -508,7 +507,7 @@ int remove_piece(Bitboard *b, uint64_t t) {
 }
 
 
-int legal_moves_for_piece(Bitboard board, int piece)
+int legal_moves_for_piece(const Bitboard board, const int piece)
 {
     // count the legal moves for a given piece on the board
     uint64_t allies = occupied_squares(board) & board.whites;
@@ -530,7 +529,7 @@ int legal_moves_for_piece(Bitboard board, int piece)
 }
 
 
-int legal_moves_for_board(Bitboard board) {
+int legal_moves_for_board(const Bitboard board) {
     // count the moves available for the whole board
     int moves = legal_moves_for_piece(board, KING)
         + legal_moves_for_piece(board, QUEEN)
@@ -549,7 +548,7 @@ void apply_move(Bitboard *board_ref, const Move move) {
 }
 
 
-int legal_moves(Bitboard board, uint64_t origin, uint64_t targets)
+int legal_moves(Bitboard board, const uint64_t origin, const uint64_t targets)
 {
     int moves = 0;
     uint64_t next_target;
@@ -573,7 +572,7 @@ int legal_moves(Bitboard board, uint64_t origin, uint64_t targets)
 }
 
 
-uint64_t squares_with_piece(Bitboard board, int piece)
+uint64_t squares_with_piece(const Bitboard board, const int piece)
 {
     // return all the squares with a piece, regardless of colour
     switch(piece & ~WHITE) {
@@ -595,7 +594,7 @@ uint64_t squares_with_piece(Bitboard board, int piece)
 }
 
 
-uint64_t src_pieces(Bitboard board, uint64_t target, int piece)
+uint64_t src_pieces(const Bitboard board, const uint64_t target, const int piece)
 {
     // return the locations of the pieces which can reach a particular square
     uint64_t allies = occupied_squares(board) & board.whites;
@@ -618,7 +617,7 @@ uint64_t src_pieces(Bitboard board, uint64_t target, int piece)
 }
 
     
-Move parse_algebra(Bitboard board, char *algebra)
+Move parse_algebra(const Bitboard board, const char *algebra)
 {
     /*
      * Generously parse a PGN format algebra statement
