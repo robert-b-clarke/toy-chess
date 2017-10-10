@@ -58,7 +58,7 @@ void print_board(Bitboard board)
     }
 }
 
-char piece_letter(int piece) 
+char piece_letter(const int piece) 
 {
     switch(piece & ~WHITE) {
         case PAWN:
@@ -320,7 +320,7 @@ int bitscan (const uint64_t b)
 }
 
 
-Bitboard fen_to_board(char *fen)
+Bitboard fen_to_board(const char *fen)
 {
     /*
      * Parse a string of "Forsyth-Edwards Notation" game state and return a
