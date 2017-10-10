@@ -52,7 +52,7 @@ typedef struct {
 typedef uint64_t (*PieceMover)(uint64_t pieces, uint64_t enemies, uint64_t allies);
 
 
-Bitboard fen_to_board(char *fen);
+Bitboard fen_to_board(const char *fen);
 void print_board(Bitboard board);
 char piece_letter(int piece);
 void rotate_board_180(Bitboard *board);
@@ -90,4 +90,4 @@ int legal_moves_for_piece(Bitboard board, int piece);
 int legal_moves_for_board(Bitboard board);
 uint64_t squares_with_piece(Bitboard board, int piece);
 uint64_t src_pieces(Bitboard board, uint64_t target, int piece);
-Move parse_algebra(Bitboard board, char *algebra);
+Move parse_algebra(Bitboard board, const char *algebra);

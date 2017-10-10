@@ -320,7 +320,7 @@ int bitscan ( uint64_t b )
 }
 
 
-Bitboard fen_to_board(char *fen)
+Bitboard fen_to_board(const char *fen)
 {
     /*
      * Parse a string of "Forsyth-Edwards Notation" game state and return a
@@ -601,7 +601,7 @@ uint64_t src_pieces(Bitboard board, uint64_t target, int piece)
 }
 
     
-Move parse_algebra(Bitboard board, char *algebra)
+Move parse_algebra(Bitboard board, const char *algebra)
 {
     /*
      * Generously parse a PGN format algebra statement
