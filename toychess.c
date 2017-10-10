@@ -298,23 +298,6 @@ uint64_t rotate_180( uint64_t bitlayer )
 }
 
 
-uint64_t sq_bit(char file, int rank)
-{
-    /*
-     * convert a rank and file into a bitmap with a single bit set
-     * file a-h (lower case), rank 1-8
-     */
-    uint8_t position;
-    uint8_t file_int = (uint8_t)file - 97;
-    rank --;
-    position = 8 * (uint8_t)rank + file_int;
-    if (position < 64) {
-        return SQUARE_0 >> position;
-    }
-    return EMPTY_BOARD;
-}
-
-
 uint64_t delete_ls1b(const uint64_t bitlayer, uint64_t *deleted_bit)
 {
     uint64_t without_ls1b = bitlayer & (bitlayer - 1);

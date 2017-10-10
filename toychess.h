@@ -76,7 +76,6 @@ uint64_t knight_attacks(const uint64_t knights, const uint64_t enemies, const ui
 uint64_t pawn_attacks(const uint64_t pawns, const uint64_t allies);
 uint64_t sliding_attack( uint64_t (*slider)(uint64_t), uint64_t attackers, const uint64_t enemies, const uint64_t allies);
 PieceMover mover_func(const int piece);
-uint64_t sq_bit(char file, int rank); // TODO - deprecate
 uint64_t delete_ls1b(const uint64_t bitlayer, uint64_t *deleted_bit);
 int bitscan(const uint64_t b);
 int fen_to_piece(const int fen_char);

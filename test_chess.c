@@ -14,7 +14,6 @@ void test_pawn_moves();
 void test_queen_collisions();
 void test_rotate_180();
 void test_rotate_board();
-void test_sq_bit();
 void test_delete_ls1b();
 void test_bitscan();
 void test_fen_to_board();
@@ -34,7 +33,6 @@ int main()
     test_pawn_attacks();
     test_rotate_180();
     test_rotate_board();
-    test_sq_bit();
     test_delete_ls1b();
     test_bitscan();
     test_fen_to_board();
@@ -189,19 +187,6 @@ void test_rotate_board()
         testboard.queens & testboard.whites,
         sq_map(d1),
         "White queen has moved back to d1"
-    );
-}
-
-
-void test_sq_bit()
-{
-    /* Test that conversions of rank and file result in correct
-     * single bit being set
-     */
-    assert_board_eq(
-        sq_bit('f', 7),
-        sq_map(f7),
-        "f7 is f7"
     );
 }
 
