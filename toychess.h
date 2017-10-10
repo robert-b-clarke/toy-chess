@@ -52,9 +52,9 @@ typedef struct {
 typedef uint64_t (*PieceMover)(uint64_t pieces, uint64_t enemies, uint64_t allies);
 
 
-Bitboard fen_to_board(const char *fen);
+Bitboard fen_to_board(char *fen);
 void print_board(Bitboard board);
-char piece_letter(const int piece);
+char piece_letter(int piece);
 void rotate_board_180(Bitboard *board);
 int population_count(uint64_t bitlayer);
 uint64_t occupied_squares(const Bitboard board);
