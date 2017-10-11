@@ -43,10 +43,12 @@ typedef struct {
     uint64_t whites;
 } Bitboard;
 
-typedef struct {
+typedef struct move_item {
     uint64_t src;
     uint64_t dst;
+    struct move_item *next;
 } Move;
+
 
 // typedef for where we need a function pointer
 typedef uint64_t (*PieceMover)(uint64_t pieces, uint64_t enemies, uint64_t allies);
