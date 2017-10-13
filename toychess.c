@@ -92,6 +92,13 @@ void rotate_board_180(Bitboard *board)
 }
 
 
+Bitboard enemy_board(Bitboard board)
+{
+    rotate_board_180(&board);
+    board.whites = ~board.whites;
+    return board;
+}
+
 int population_count(uint64_t bitlayer)
 {
     /* count the set bits */
@@ -547,9 +554,9 @@ int legal_moves(Bitboard board, uint64_t origin, uint64_t targets)
     next_move.dst = next_target;
     apply_move(&board, next_move);
     // assess whether the board is now in check
-    rotate_board_180( &board );
-    board.whites = ~board.whites;
-    if(!in_check(board)) {
+    // rotate_board_180( &board );
+    // board.whites = ~board.whites;
+    if(!in_check(enemy_board(board))) {
         moves ++;
     }
     return moves;

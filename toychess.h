@@ -58,6 +58,7 @@ Bitboard fen_to_board(const char *fen);
 void print_board(Bitboard board);
 char piece_letter(int piece);
 void rotate_board_180(Bitboard *board);
+Bitboard enemy_board(Bitboard board);
 int population_count (uint64_t bitlayer);
 uint64_t occupied_squares(Bitboard board);
 uint64_t shift_n( uint64_t bitlayer );
