@@ -463,7 +463,8 @@ bool can_escape_check(Bitboard board)
      * Test whether we can escape from check, and if we can return true
      * a false return means we're mated
      */
-    if(legal_moves_for_board(board) > 0) {
+    // TODO - free memory
+    if(possible_moves != NULL) {
         return true;
     }
     return false;
@@ -498,39 +499,37 @@ int remove_piece(Bitboard *b, uint64_t t) {
 }
 
 
-int legal_moves_for_piece(Move *move_list, Bitboard board, int piece)
+void legal_moves_for_piece(Move **move_list, Bitboard board, int piece)
 {
     // count the legal moves for a given piece on the board
     uint64_t allies = occupied_squares(board) & board.whites;
     uint64_t enemies = occupied_squares(board) & ~board.whites;
-    int moves = 0;
     PieceMover piece_mover = mover_func(piece);
     // get the pieces
     uint64_t next_piece = EMPTY_BOARD;
     uint64_t remaining_pieces = squares_with_piece(board, piece) & allies;
     while(population_count(remaining_pieces) > 0) {
         remaining_pieces = delete_ls1b(remaining_pieces, &next_piece);
-        moves += legal_moves(
+        legal_moves(
             move_list,
             board,
             next_piece,
             piece_mover(next_piece, enemies, allies)
         );
     }
-    return moves;
 }
 
 
-int legal_moves_for_board(Bitboard board) {
+Move *legal_moves_for_board(Bitboard board) {
     // count the moves available for the whole board
     Move *move_list = NULL;
-    int moves = legal_moves_for_piece(move_list, board, KING)
-        + legal_moves_for_piece(move_list, board, QUEEN)
-        + legal_moves_for_piece(move_list, board, ROOK)
-        + legal_moves_for_piece(move_list, board, BISHOP)
-        + legal_moves_for_piece(move_list, board, KNIGHT)
-        + legal_moves_for_piece(move_list, board, PAWN);
-    return moves;
+    legal_moves_for_piece(&move_list, board, KING);
+    legal_moves_for_piece(&move_list, board, QUEEN);
+    legal_moves_for_piece(&move_list, board, ROOK);
+    legal_moves_for_piece(&move_list, board, BISHOP);
+    legal_moves_for_piece(&move_list, board, KNIGHT);
+    legal_moves_for_piece(&move_list, board, PAWN);
+    return move_list;
 }
 
 
@@ -540,24 +539,34 @@ void apply_move(Bitboard *board_ref, const Move move) {
     add_piece_to_board(board_ref, src_piece, move.dst);
 }
 
-void move_list_push(Move *move_list, Move move)
+void move_list_push(Move **move_list, Move move)
 {
     Move *new_move = malloc(sizeof(Move));
     memcpy(new_move, &move, sizeof(Move));
     // insert into head of list
-    new_move->next = move_list;
-    move_list = new_move;
+    new_move->next = *move_list;
+    *move_list = new_move;
 }
 
 
-int legal_moves(Move *move_list, Bitboard board, uint64_t origin, uint64_t targets)
+int move_list_count(Move *move_list) {
+    int i=0;
+    Move *next_move = move_list;
+    while(next_move != NULL) {
+        i++;
+        next_move = next_move->next;
+    }
+    return i;
+}
+
+
+void legal_moves(Move **move_list, Bitboard board, uint64_t origin, uint64_t targets)
 {
-    int moves = 0;
     uint64_t next_target;
     uint64_t remaining_targets;
     remaining_targets = delete_ls1b(targets, &next_target);
     if(remaining_targets) {
-        moves += legal_moves(move_list, board, origin, remaining_targets);
+        legal_moves(move_list, board, origin, remaining_targets);
     }
     // determine if we're capturing a piece clear it first
     Move next_move = {};
@@ -566,10 +575,8 @@ int legal_moves(Move *move_list, Bitboard board, uint64_t origin, uint64_t targe
     apply_move(&board, next_move);
     // assess whether the board is now in check
     if(!in_check(enemy_board(board))) {
-        moves ++;
         move_list_push(move_list, next_move);
     }
-    return moves;
 }
 
 
