@@ -463,10 +463,12 @@ bool can_escape_check(Bitboard board)
      * Test whether we can escape from check, and if we can return true
      * a false return means we're mated
      */
-    // TODO - free memory
+    // approach is suboptimal as we search all possible moves
+    Move *possible_moves = legal_moves_for_board(board);
     if(possible_moves != NULL) {
         return true;
     }
+    move_list_delete(&possible_moves);
     return false;
     
 }
@@ -557,6 +559,16 @@ int move_list_count(Move *move_list) {
         next_move = next_move->next;
     }
     return i;
+}
+
+
+void move_list_delete(Move **move_list) {
+    Move *popped;
+    while(*move_list != NULL) {
+        popped = *move_list;
+        *move_list = popped->next;
+        free(popped);
+    }
 }
 
 

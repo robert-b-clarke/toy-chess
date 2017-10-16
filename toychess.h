@@ -90,6 +90,7 @@ int remove_piece(Bitboard *b, uint64_t t);
 void apply_move(Bitboard *board_ref, const Move move);
 void move_list_push(Move **move_list, Move move);
 int move_list_count(Move *move_list);
+void move_list_delete(Move **move_list);
 void legal_moves(Move **move_list, Bitboard board, uint64_t origin, uint64_t targets);
 void legal_moves_for_piece(Move **move_list, Bitboard board, int piece);
 Move *legal_moves_for_board(Bitboard board);
