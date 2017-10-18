@@ -464,4 +464,11 @@ void test_parse_algebra()
         sq_map(a4),
         "Move disambiguated by rank"
     );
+    Move *legal_move = legal_moves_for_board(testboard);
+    print_board(testboard);
+    printf("move list\n");
+    while(legal_move != NULL) {
+        printf("%s\n", algebra_for_move(testboard, *legal_move));
+        legal_move = legal_move->next;
+    }
 }

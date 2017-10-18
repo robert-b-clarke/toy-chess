@@ -485,6 +485,26 @@ bool can_escape_check(Bitboard board)
 }
 
 
+int piece_at_square(Bitboard b, uint64_t t) {
+    int white_flag = b.whites & t ? WHITE : 0;
+    if(b.kings & t) {
+        return KING | white_flag;
+    } else if(b.queens & t) {
+        return QUEEN | white_flag;
+    } else if(b.rooks & t) {
+        return ROOK | white_flag;
+    } else if(b.bishops & t) {
+        return BISHOP | white_flag;
+    } else if(b.knights & t) {
+        return KNIGHT | white_flag;
+    } else if(b.pawns & t) {
+        return PAWN | white_flag;
+    }
+    // square is empty
+    return 0;
+}
+
+
 int remove_piece(Bitboard *b, uint64_t t) {
     // blank a square and return the piece that resides there
     int white_flag = b->whites & t ? WHITE : 0;
@@ -647,7 +667,63 @@ uint64_t src_pieces(Bitboard board, uint64_t target, int piece)
     return srcs;
 }
 
-    
+char *algebra_for_move(Bitboard board, Move move)
+{
+    int piece = piece_at_square(board, move.src);
+    int file_neighbours; 
+    int rank_neighbours; 
+    char src_file = 0;
+    char src_rank = 0;
+    // work out if we're ambiguous
+    uint64_t srcs = src_pieces(board, move.dst, move.src);
+    if(population_count(srcs) > 1) {
+        // disambig on file or on src
+        file_neighbours = population_count(
+            sliding_attack(shift_n, move.src, EMPTY_BOARD, EMPTY_BOARD)
+            | sliding_attack(shift_s, move.src, EMPTY_BOARD, EMPTY_BOARD)
+        );
+        rank_neighbours = population_count(
+            sliding_attack(shift_e, move.src, EMPTY_BOARD, EMPTY_BOARD)
+            | sliding_attack(shift_w, move.src, EMPTY_BOARD, EMPTY_BOARD)
+        );
+        printf("ambiguous with file neighbours %d and rank neighbours %d", file_neighbours, rank_neighbours);
+        int loc = bitscan(move.dst);
+        // file loc % 8;
+        if(file_neighbours == 0){
+            src_rank = 0x31 + abs(loc / 8);
+        }
+        // rank floor(loc / 8)
+        
+    }
+    // build up string
+    char algebra[10];
+    char *c = algebra;
+    char letter = piece_letter(piece);
+    bool captures = (piece_at_square(board, move.dst)) ? true  : false;
+    if(letter != 112) {
+        *c = letter;
+        c++;
+    }
+    if(src_file) {
+        *c = src_file;
+        c++;
+    }
+    if(src_rank) {
+        *c = src_rank;
+        c++;
+    }
+    if(captures) {
+        *c = 'x';
+        c++;
+    }
+    // copy target square onto the end of the string
+    strcpy(c, SQUARE_NAMES[bitscan(move.dst)]);
+    char *result = malloc(strlen(algebra));
+    strcpy(result, algebra);
+    return result;
+}
+
+
 Move parse_algebra(Bitboard board, const char *algebra)
 {
     /*
