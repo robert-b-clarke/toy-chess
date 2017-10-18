@@ -675,28 +675,27 @@ char *algebra_for_move(Bitboard board, Move move)
     char src_file = 0;
     char src_rank = 0;
     // work out if we're ambiguous
-    uint64_t srcs = src_pieces(board, move.dst, move.src);
+    uint64_t srcs = src_pieces(board, move.dst, piece);
     if(population_count(srcs) > 1) {
         // disambig on file or on src
         file_neighbours = population_count(
-            sliding_attack(shift_n, move.src, EMPTY_BOARD, EMPTY_BOARD)
-            | sliding_attack(shift_s, move.src, EMPTY_BOARD, EMPTY_BOARD)
-        );
+            (sliding_attack(shift_n, move.src, EMPTY_BOARD, EMPTY_BOARD)
+            | sliding_attack(shift_s, move.src, EMPTY_BOARD, EMPTY_BOARD))
+            & srcs);
         rank_neighbours = population_count(
-            sliding_attack(shift_e, move.src, EMPTY_BOARD, EMPTY_BOARD)
-            | sliding_attack(shift_w, move.src, EMPTY_BOARD, EMPTY_BOARD)
-        );
-        printf("ambiguous with file neighbours %d and rank neighbours %d", file_neighbours, rank_neighbours);
-        int loc = bitscan(move.dst);
-        // file loc % 8;
-        if(file_neighbours == 0){
-            src_rank = 0x31 + abs(loc / 8);
+            (sliding_attack(shift_e, move.src, EMPTY_BOARD, EMPTY_BOARD)
+            | sliding_attack(shift_w, move.src, EMPTY_BOARD, EMPTY_BOARD))
+            & srcs);
+        int loc = bitscan(move.src);
+        if(!file_neighbours | (file_neighbours & rank_neighbours)){
+            src_file = 0x61 + (int)(loc % 8);
         }
-        // rank floor(loc / 8)
-        
+        if(!rank_neighbours | (file_neighbours & rank_neighbours)){
+            src_rank =  0x31 + (int)(loc / 8);
+        }
     }
     // build up string
-    char algebra[10];
+    static char algebra[10];
     char *c = algebra;
     char letter = piece_letter(piece);
     bool captures = (piece_at_square(board, move.dst)) ? true  : false;
@@ -720,6 +719,7 @@ char *algebra_for_move(Bitboard board, Move move)
     strcpy(c, SQUARE_NAMES[bitscan(move.dst)]);
     char *result = malloc(strlen(algebra));
     strcpy(result, algebra);
+    // TODO - check
     return result;
 }
 
