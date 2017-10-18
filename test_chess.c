@@ -440,13 +440,13 @@ void test_parse_algebra()
     move = parse_algebra(testboard, "Nc3");
     assert_board_eq(
         move.dst,
-        sq_map(c3),
-        "Target is c3 as expected"
+        EMPTY_BOARD,
+        "Ambiguous move specifies no destination"
     );
     assert_board_eq(
         move.src,
-        sq_map(a2) | sq_map(b1) | sq_map(d1),
-        "Ambiguous move"
+        EMPTY_BOARD,
+        "Ambiguous move specifies no source"
     );
 
     move = parse_algebra(testboard, "Nbc3");
@@ -464,11 +464,4 @@ void test_parse_algebra()
         sq_map(a4),
         "Move disambiguated by rank"
     );
-    Move *legal_move = legal_moves_for_board(testboard);
-    print_board(testboard);
-    printf("move list\n");
-    while(legal_move != NULL) {
-        printf("%s\n", algebra_for_move(testboard, *legal_move));
-        legal_move = legal_move->next;
-    }
 }

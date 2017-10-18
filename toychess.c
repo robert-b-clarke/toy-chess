@@ -727,44 +727,26 @@ char *algebra_for_move(Bitboard board, Move move)
 Move parse_algebra(Bitboard board, const char *algebra)
 {
     /*
-     * Generously parse a PGN format algebra statement
-     * Almost no format validation
+     * Look up a PGN chess algebra statement against a list of moves
+     *
+     * TODO in the interests of avoiding premature optimisation this currently
+     * generates every move, and every algebra statement until it finds a
+     * match. Options for caching or optimising search are numerous, but best
+     * explored when UI is developed
      */
-    char dst_file = 0;
-    char dst_rank = 0;
-    int src_piece = PAWN;
-    uint64_t src_region = FULL_BOARD;
-    uint64_t target_square = EMPTY_BOARD;
-    int i;
-    Move move = {};
-    // loop through statement in reverse
-    // take last rank and file as destination
-    // use earlier rank or file to disambiguate
-    // Assume uppercase char is a piece
-    // ignore anything else
-    // TODO this is obviously limited!
-    for(i = strlen(algebra) - 1; i >= 0; i--) {
-        if(isdigit(algebra[i])){
-            if(dst_rank) {
-                // narrow source pieces by rank
-                src_region &= RANK_1 >> ((algebra[i] - 0x31) * 8);
-            } else {
-                dst_rank = algebra[i];
-            }
-        } else if(algebra[i] >= 0x61 && algebra[i] <= 0x68) {
-            if(dst_file) {
-                // narrow source pieces by file
-                src_region &= FILE_A >> (algebra[i] - 0x61);
-            } else {
-                dst_file = algebra[i];
-            }
-        } else if(isupper(algebra[i])) {
-            src_piece = fen_to_piece(algebra[i]) ^ WHITE;
+    Move result = {};
+    char *algebra_scan;
+    Move *legal_move = legal_moves_for_board(board);
+    while(legal_move != NULL) {
+        algebra_scan = algebra_for_move(board, *legal_move);
+        if(strcmp(algebra, algebra_scan) == 0) {
+            result.dst = legal_move->dst;
+            result.src = legal_move->src;
+            free(algebra_scan);
+            return result;
         }
+        free(algebra_scan);
+        legal_move = legal_move->next;
     }
-    target_square = (FILE_A >> (dst_file - 0x61)) & (RANK_1 >> ((dst_rank - 0x31) * 8));
-    move.src = src_region & src_pieces(board, target_square, src_piece);
-    move.dst = target_square;
-    // printf("active piece %c going to %s\n", piece_letter(src_piece), SQUARE_NAMES[bitscan(target_square)]);
-    return move;
+    return result;
 }
