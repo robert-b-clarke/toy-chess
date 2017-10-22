@@ -593,13 +593,16 @@ int move_list_count(Move *move_list) {
 }
 
 
-void move_list_delete(Move **move_list) {
+int move_list_delete(Move **move_list) {
     Move *popped;
+    int i = 0;
     while(*move_list != NULL) {
         popped = *move_list;
         *move_list = popped->next;
         free(popped);
+        i++;
     }
+    return i;
 }
 
 
@@ -749,4 +752,53 @@ Move parse_algebra(Bitboard board, const char *algebra)
         legal_move = legal_move->next;
     }
     return result;
+}
+
+
+#define pop_count_eval(pcs, whites, weight) \
+    (population_count(pcs & whites) - \
+        population_count(pcs & ~whites) \
+    ) * weight
+
+
+float eval_shannon(Bitboard board)
+{
+    float score = 0.0;
+    score += pop_count_eval(board.kings, board.whites, 200);
+    score += pop_count_eval(board.queens, board.whites, 8);
+    score += pop_count_eval(board.rooks, board.whites, 5);
+    score += pop_count_eval(board.bishops, board.whites, 3);
+    score += pop_count_eval(board.knights, board.whites, 3);
+    score += pop_count_eval(board.pawns, board.whites, 1);
+    // count available moves
+    // TODO move list probably generated again so could be optimised
+    Move *my_moves = legal_moves_for_board(board);
+    Move *enemy_moves = legal_moves_for_board(enemy_board(board));
+    score += 0.1 * (
+        move_list_delete(&my_moves) - move_list_delete(&enemy_moves)
+    );
+    // calcuate blocked_pawns
+    uint64_t occupied = occupied_squares(board);
+    score -= 0.5 * (population_count(
+        shift_s(occupied_squares(board) & board.pawns & board.whites)
+    ) - population_count(
+        shift_n(occupied_squares(board) & board.pawns & ~board.whites)
+    ));
+    // calculate "isolated" pawns
+    // calulate "doubled" pawns
+    score -= 0.5 * (population_count(doubled_pawns(board.pawns & board.whites))
+    - population_count(doubled_pawns(board.pawns & ~board.whites)));
+    return score;
+}
+
+uint64_t doubled_pawns(uint64_t pawns) {
+    uint64_t col_pawns;
+    uint64_t doubled_pawns;
+    uint64_t pf;
+    for(pf = FILE_A; pf; pf >>=1){
+        col_pawns = pf & pawns;
+        if((col_pawns - 1) & col_pawns)
+            doubled_pawns |= col_pawns;
+    }
+    return doubled_pawns;
 }
