@@ -610,6 +610,8 @@ void legal_moves(Move **move_list, Bitboard board, uint64_t origin, uint64_t tar
 {
     uint64_t next_target;
     uint64_t remaining_targets;
+    if(!targets)
+        return; // nothing to do here
     remaining_targets = delete_ls1b(targets, &next_target);
     if(remaining_targets) {
         legal_moves(move_list, board, origin, remaining_targets);

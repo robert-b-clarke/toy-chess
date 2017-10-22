@@ -21,6 +21,7 @@ void test_in_check();
 void test_escape_check();
 void test_src_pieces();
 void test_parse_algebra();
+void test_move_count();
 
 
 int main()
@@ -40,6 +41,7 @@ int main()
     test_escape_check();
     test_src_pieces();
     test_parse_algebra();
+    test_move_count();
     return 0;
 }
 
@@ -464,4 +466,16 @@ void test_parse_algebra()
         sq_map(a4),
         "Move disambiguated by rank"
     );
+}
+
+
+void test_move_count()
+{
+    Bitboard testboard = fen_to_board(START_POS_FEN);
+    Move *move_list = legal_moves_for_board(testboard);
+    assert_true(
+        move_list_count(move_list) == 20,
+        "20 opening moves are available"
+    );
+    move_list_delete(&move_list);
 }
