@@ -570,7 +570,9 @@ void apply_move(Bitboard *board_ref, const Move move) {
     remove_piece(board_ref, move.dst);
     int src_piece = remove_piece(board_ref, move.src);
     add_piece_to_board(board_ref, src_piece, move.dst);
+    board_ref->black_move = ~board_ref->black_move;
 }
+
 
 void move_list_push(Move **move_list, Move move)
 {

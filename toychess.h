@@ -32,6 +32,7 @@ typedef struct {
     uint64_t queens;
     uint64_t kings;
     uint64_t whites;
+    bool black_move;
 } Bitboard;
 
 typedef struct move_item {
