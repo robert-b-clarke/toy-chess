@@ -557,16 +557,29 @@ void legal_moves_for_piece(Move **move_list, Bitboard board, int piece)
     }
 }
 
+void move_list_rotate(Move *moves)
+{
+    // rotate all dst and src values
+    while(moves != NULL) {
+        moves->src = rotate_180(moves->src);
+        moves->dst = rotate_180(moves->dst);
+        moves = moves->next;
+    }
+}
 
 Move *legal_moves_for_board(Bitboard board) {
     // count the moves available for the whole board
     Move *move_list = NULL;
+    if(board.black_move)
+        board = enemy_board(board);
     legal_moves_for_piece(&move_list, board, KING);
     legal_moves_for_piece(&move_list, board, QUEEN);
     legal_moves_for_piece(&move_list, board, ROOK);
     legal_moves_for_piece(&move_list, board, BISHOP);
     legal_moves_for_piece(&move_list, board, KNIGHT);
     legal_moves_for_piece(&move_list, board, PAWN);
+    if(board.black_move)
+        move_list_rotate(move_list);
     return move_list;
 }
 
