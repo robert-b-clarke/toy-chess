@@ -655,6 +655,11 @@ uint64_t squares_with_piece(Bitboard board, int piece)
 uint64_t src_pieces(Bitboard board, uint64_t target, int piece)
 {
     // return the locations of the pieces which can reach a particular square
+    if(board.black_move) {
+        // reverse the board and adjust the target
+        board = enemy_board(board);
+        target = rotate_180(target);
+    }
     uint64_t allies = occupied_squares(board) & board.whites;
     uint64_t enemies = occupied_squares(board) & ~board.whites;
     uint64_t remaining_pieces;
@@ -670,6 +675,9 @@ uint64_t src_pieces(Bitboard board, uint64_t target, int piece)
         if(piece_mover(next_piece, enemies, allies) & target) {
             srcs |= next_piece;
         }
+    }
+    if(board.black_move) {
+        return rotate_180(srcs);
     }
     return srcs;
 }

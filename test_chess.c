@@ -431,6 +431,15 @@ void test_src_pieces()
         EMPTY_BOARD,
         "No bishops available"
     );
+    // test src_pieces for black move
+    testboard.black_move = true;
+    srcs = src_pieces(testboard, sq_map(e3), KING);
+    assert_board_eq(
+        srcs,
+        sq_map(d2),
+        "Black king is available"
+    );
+
 }
     
 void test_parse_algebra()
