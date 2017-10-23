@@ -367,6 +367,11 @@ Bitboard fen_to_board(const char *fen)
             file++;
         }
     } while(*fen++ != '\0' && !isspace(*fen));
+    // if we can carry on and find out which colour plays next
+    if(isspace(*fen))
+        fen++;
+    if(*fen == 0x62)
+        board.black_move = true;
 
     // Currently we throw away the remainder of the FEN string
     // Future support can be added for castling, en-passant, game clock etc
