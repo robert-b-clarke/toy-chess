@@ -475,6 +475,15 @@ void test_parse_algebra()
         sq_map(a4),
         "Move disambiguated by rank"
     );
+    char black_response[] =
+        "rnbqkbnr/pppppppp/8/8/3P4/8/PPP1PPPP/RNBQKBNR b KQkq - 1 1";
+    testboard = fen_to_board(black_response);
+    move = parse_algebra(testboard, "Nc6");
+    assert_board_eq(
+        move.src,
+        sq_map(b8),
+        "Move disambiguated by rank"
+    );
 }
 
 
