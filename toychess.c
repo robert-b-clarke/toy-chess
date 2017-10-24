@@ -5,6 +5,7 @@
 #include <string.h>
 #include <ctype.h>
 #include <float.h>
+#include <time.h>
 #include "toychess.h"
 
 #define UNUSED(x) (void)(x)
@@ -855,4 +856,22 @@ float negamax(Bitboard board, int depth)
     }
     move_list_delete(&legal_move);
     return max;
+}
+
+
+Move random_mover(Bitboard board)
+{
+    // return a random move from those available
+    Move result = {};
+    Move *move_list = legal_moves_for_board(board);
+    srand(time(NULL));
+    int pos = rand() % move_list_count(move_list);
+    int i;
+    for(i = 0; i < pos; i++) {
+        move_list = move_list->next;
+    }
+    result.src = move_list->src;
+    result.dst = move_list->dst;
+    move_list_delete(&move_list);
+    return result;
 }
