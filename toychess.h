@@ -94,3 +94,4 @@ Move parse_algebra(Bitboard board, const char *algebra);
 char *algebra_for_move(Bitboard board, Move move);
 float eval_shannon(Bitboard board);
 uint64_t doubled_pawns(uint64_t pawns);
+float negamax(Bitboard board, int depth);

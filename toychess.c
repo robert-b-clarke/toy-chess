@@ -4,6 +4,7 @@
 #include <stdint.h>
 #include <string.h>
 #include <ctype.h>
+#include <float.h>
 #include "toychess.h"
 
 #define UNUSED(x) (void)(x)
@@ -831,4 +832,27 @@ uint64_t doubled_pawns(uint64_t pawns) {
             doubled_pawns |= col_pawns;
     }
     return doubled_pawns;
+}
+
+float negamax(Bitboard board, int depth)
+{
+    // return the best move
+    if(depth==0) {
+        int who_moves = board.black_move ? -1 : 1;
+        return eval_shannon(board) * who_moves;
+    }
+    Move *legal_move = legal_moves_for_board(board);
+    Bitboard tmp_board = {};
+    float max = FLT_MIN;
+    float score = 0.0;
+    while(legal_move != NULL) {
+        tmp_board = board;
+        apply_move(&tmp_board, *legal_move);
+        score = 0 - negamax(tmp_board, depth - 1);
+        if(score > max)
+            max = score;
+        legal_move = legal_move->next;
+    }
+    move_list_delete(&legal_move);
+    return max;
 }
