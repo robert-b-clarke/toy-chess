@@ -44,6 +44,7 @@ typedef struct move_item {
 
 // typedef for where we need a function pointer
 typedef uint64_t (*PieceMover)(uint64_t pieces, uint64_t enemies, uint64_t allies);
+typedef Move (*MoveChoser)(Bitboard board);
 
 
 Bitboard fen_to_board(const char *fen);
@@ -96,3 +97,4 @@ float eval_shannon(Bitboard board);
 uint64_t doubled_pawns(uint64_t pawns);
 float negamax(Bitboard board, int depth);
 Move random_mover(Bitboard board);
+Move negamax_mover(Bitboard board);

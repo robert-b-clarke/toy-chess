@@ -875,3 +875,26 @@ Move random_mover(Bitboard board)
     move_list_delete(&move_list);
     return result;
 }
+
+
+Move negamax_mover(Bitboard board)
+{
+    Bitboard tmp_board = {};
+    float score = 0.0;
+    float max = FLT_MIN;
+    Move result = {};
+    Move *move_list = legal_moves_for_board(board);
+    while(move_list != NULL) {
+        tmp_board = board;
+        apply_move(&tmp_board, *move_list);
+        score = negamax(tmp_board, 0);
+        if(score > max) {
+            max = score;
+            result.src = move_list->src;
+            result.dst = move_list->dst;
+        }
+        move_list = move_list->next;
+    }
+    move_list_delete(&move_list);
+    return result;
+}
