@@ -839,8 +839,8 @@ float negamax(Bitboard board, int depth)
 {
     // return the best move
     if(depth==0) {
-        int who_moves = board.black_move ? -1 : 1;
-        return eval_shannon(board) * who_moves;
+        int who_moved = board.black_move ? 1 : -1;
+        return eval_shannon(board) * who_moved;
     }
     Move *legal_move = legal_moves_for_board(board);
     Bitboard tmp_board = {};
@@ -887,7 +887,7 @@ Move negamax_mover(Bitboard board)
     while(move_list != NULL) {
         tmp_board = board;
         apply_move(&tmp_board, *move_list);
-        score = negamax(tmp_board, 0);
+        score = 0 - negamax(tmp_board, 0);
         if(score > max) {
             max = score;
             result.src = move_list->src;
