@@ -418,6 +418,8 @@ void add_piece_to_board(Bitboard *board, int piece, uint64_t target)
     if(piece & WHITE) {
         board->whites |= target;
         piece = piece ^ WHITE;
+    } else if (board->whites & target){
+        board->whites ^= target;
     }
     switch(piece) {
         case PAWN:
@@ -590,7 +592,7 @@ void apply_move(Bitboard *board_ref, const Move move) {
     remove_piece(board_ref, move.dst);
     int src_piece = remove_piece(board_ref, move.src);
     add_piece_to_board(board_ref, src_piece, move.dst);
-    board_ref->black_move = ~board_ref->black_move;
+    board_ref->black_move = !(board_ref->black_move);
 }
 
 
@@ -897,4 +899,35 @@ Move negamax_mover(Bitboard board)
     }
     move_list_delete(&move_list);
     return result;
+}
+
+
+void match_player(MoveChoser player1, MoveChoser player2)
+{
+    Bitboard board = fen_to_board(START_POS_FEN);
+    int halfmove = 0;
+    char *algebra;
+    Move next_move;
+    printf("\n\n\nGame begins!\n\n");
+    print_board(board);
+    while(halfmove < 10) {
+        if(board.black_move) {
+            printf("> black move: ");
+            next_move = player2(board);
+        } else {
+            printf("> white move: ");
+            next_move = player1(board);
+        }
+        algebra = algebra_for_move(board, next_move);
+        apply_move(&board, next_move);
+        printf("\n%s\n", algebra);
+        if(in_check(board)){
+            if(!can_escape_check(enemy_board(board))) {
+                printf("\n\nCHECK MATE after %d moves\n", halfmove);
+                break;
+            }
+        }
+        print_board(board);
+        halfmove ++;
+    }
 }

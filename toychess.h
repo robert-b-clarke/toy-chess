@@ -98,3 +98,4 @@ uint64_t doubled_pawns(uint64_t pawns);
 float negamax(Bitboard board, int depth);
 Move random_mover(Bitboard board);
 Move negamax_mover(Bitboard board);
+void match_player(MoveChoser player1, MoveChoser player2);
