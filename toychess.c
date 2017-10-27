@@ -846,7 +846,7 @@ float negamax(Bitboard board, int depth)
     }
     Move *legal_move = legal_moves_for_board(board);
     Bitboard tmp_board = {};
-    float max = FLT_MIN;
+    float max = -FLT_MAX;
     float score = 0.0;
     while(legal_move != NULL) {
         tmp_board = board;
@@ -883,13 +883,13 @@ Move negamax_mover(Bitboard board)
 {
     Bitboard tmp_board = {};
     float score = 0.0;
-    float max = FLT_MIN;
+    float max = -FLT_MAX;
     Move result = {};
     Move *move_list = legal_moves_for_board(board);
     while(move_list != NULL) {
         tmp_board = board;
         apply_move(&tmp_board, *move_list);
-        score = 0 - negamax(tmp_board, 0);
+        score = 0 - negamax(tmp_board, 3);
         if(score > max) {
             max = score;
             result.src = move_list->src;
@@ -910,7 +910,7 @@ void match_player(MoveChoser player1, MoveChoser player2)
     Move next_move;
     printf("\n\n\nGame begins!\n\n");
     print_board(board);
-    while(halfmove < 10) {
+    while(halfmove < 1000) {
         if(board.black_move) {
             printf("> black move: ");
             next_move = player2(board);
@@ -924,7 +924,7 @@ void match_player(MoveChoser player1, MoveChoser player2)
         if(in_check(board)){
             if(!can_escape_check(enemy_board(board))) {
                 printf("\n\nCHECK MATE after %d moves\n", halfmove);
-                break;
+                exit(0);
             }
         }
         print_board(board);
