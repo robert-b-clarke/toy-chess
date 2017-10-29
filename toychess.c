@@ -484,12 +484,13 @@ bool can_escape_check(Bitboard board)
      * a false return means we're mated
      */
     // approach is suboptimal as we search all possible moves
+    bool can_escape = false;
     Move *possible_moves = legal_moves_for_board(board);
     if(possible_moves != NULL) {
-        return true;
+        can_escape = true;
     }
     move_list_delete(&possible_moves);
-    return false;
+    return can_escape;
     
 }
 
