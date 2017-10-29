@@ -6,13 +6,16 @@ Progress ground to a halt several months back, due to a complete lack of spare t
 
 ## TODO
 
-Nearly everything!
+A lot of things:
 
-* Chess algebra interpretetr
-* Move generation for opening pawns, en-passant, and castling
-* Move validator
-* 2 player mode
-* 1 player mode with some kind of AI
+* En-passant, castling and pawn promotion
+* Algebra support for check, checkmate and special moves
+* Human player using algebra interpreter
+* Benchmarking (tracepoints, memory profiling etc)
+* optimisation (Alpha beta pruning, faster evalutation, reduce rotation of board)
+* Experiment with different evaluators, game phases, "openings book" etc
+* More diverse set of test cases for comparing algos (could use chess 960 starting positions)
+* A "real" UI?
 
 ## Build and run the test suite
 
