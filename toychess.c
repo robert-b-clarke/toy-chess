@@ -841,7 +841,7 @@ float negamax(Bitboard board, int depth)
 {
     // return the best move
     if(depth==0) {
-        int who_moved = board.black_move ? 1 : -1;
+        int who_moved = board.black_move ? -1 : 1;
         return eval_shannon(board) * who_moved;
     }
     Move *legal_move = legal_moves_for_board(board);
@@ -851,7 +851,7 @@ float negamax(Bitboard board, int depth)
     while(legal_move != NULL) {
         tmp_board = board;
         apply_move(&tmp_board, *legal_move);
-        score = 0 - negamax(tmp_board, depth - 1);
+        score = -negamax(tmp_board, depth - 1);
         if(score > max)
             max = score;
         legal_move = legal_move->next;
@@ -889,7 +889,7 @@ Move negamax_mover(Bitboard board)
     while(move_list != NULL) {
         tmp_board = board;
         apply_move(&tmp_board, *move_list);
-        score = 0 - negamax(tmp_board, 3);
+        score = 0 - negamax(tmp_board, 1);
         if(score > max) {
             max = score;
             result.src = move_list->src;
@@ -921,13 +921,13 @@ void match_player(MoveChoser player1, MoveChoser player2)
         algebra = algebra_for_move(board, next_move);
         apply_move(&board, next_move);
         printf("\n%s\n", algebra);
+        print_board(board);
+        halfmove ++;
         if(in_check(board)){
-            if(!can_escape_check(enemy_board(board))) {
+            if(!can_escape_check(board)) {
                 printf("\n\nCHECK MATE after %d moves\n", halfmove);
                 exit(0);
             }
         }
-        print_board(board);
-        halfmove ++;
     }
 }
