@@ -9,6 +9,9 @@
 #define KING 6
 #define WHITE 8
 
+#define CASTLE_QS 1
+#define CASTLE_KS 1
+
 #define START_POS_FEN "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"
 
 typedef enum {
@@ -33,11 +36,17 @@ typedef struct {
     uint64_t kings;
     uint64_t whites;
     bool black_move;
+    // castling disallowed by setting these
+    bool castle_block_wqs;
+    bool castle_block_wks;
+    bool castle_block_bqs;
+    bool castle_block_bks;
 } Bitboard;
 
 typedef struct move_item {
     uint64_t src;
     uint64_t dst;
+    uint8_t special;
     struct move_item *next;
 } Move;
 
