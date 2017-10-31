@@ -36,11 +36,11 @@ typedef struct {
     uint64_t kings;
     uint64_t whites;
     bool black_move;
-    // castling disallowed by setting these
-    bool castle_block_wqs;
-    bool castle_block_wks;
-    bool castle_block_bqs;
-    bool castle_block_bks;
+    // castling allowed by setting these
+    bool castle_wqs;
+    bool castle_wks;
+    bool castle_bqs;
+    bool castle_bks;
 } Bitboard;
 
 typedef struct move_item {
@@ -96,6 +96,7 @@ int move_list_count(Move *move_list);
 int move_list_delete(Move **move_list);
 void legal_moves(Move **move_list, Bitboard board, uint64_t origin, uint64_t targets);
 void legal_moves_for_piece(Move **move_list, Bitboard board, int piece);
+void legal_moves_castling(Move **move_list, Bitboard board);
 void move_list_rotate(Move *moves);
 Move *legal_moves_for_board(Bitboard board);
 uint64_t squares_with_piece(Bitboard board, int piece);

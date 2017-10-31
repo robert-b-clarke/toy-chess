@@ -370,10 +370,27 @@ Bitboard fen_to_board(const char *fen)
         }
     } while(*fen++ != '\0' && !isspace(*fen));
     // if we can carry on and find out which colour plays next
-    if(isspace(*fen))
-        fen++;
-    if(*fen == 0x62)
-        board.black_move = true;
+    if(!isspace(*fen))
+        return board;
+    fen++;
+    do {
+        if(*fen == 0x62)
+            board.black_move = true;
+    } while(*fen++ != '\0' && !isspace(*fen));
+    // carry on and get castling flags
+    if(!isspace(*fen))
+        return board;
+    fen++;
+    do {
+        if(*fen==0x4B)
+            board.castle_wks = true;
+        if(*fen==0x51)
+            board.castle_wqs = true;
+        if(*fen==0x6B)
+            board.castle_bks = true;
+        if(*fen==0x71)
+            board.castle_bks = true;
+    } while(*fen++ != '\0' && !isspace(*fen));
 
     // Currently we throw away the remainder of the FEN string
     // Future support can be added for castling, en-passant, game clock etc
@@ -562,6 +579,13 @@ void legal_moves_for_piece(Move **move_list, Bitboard board, int piece)
     }
 }
 
+
+void legal_moves_castling(Move **move_list, Bitboard board)
+{
+    return;
+}
+
+
 void move_list_rotate(Move *moves)
 {
     // rotate all dst and src values
@@ -583,6 +607,8 @@ Move *legal_moves_for_board(Bitboard board) {
     legal_moves_for_piece(&move_list, board, BISHOP);
     legal_moves_for_piece(&move_list, board, KNIGHT);
     legal_moves_for_piece(&move_list, board, PAWN);
+    legal_moves_castling(&move_list, board);
+
     if(board.black_move)
         move_list_rotate(move_list);
     return move_list;
