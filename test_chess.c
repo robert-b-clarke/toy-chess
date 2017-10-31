@@ -22,6 +22,7 @@ void test_escape_check();
 void test_src_pieces();
 void test_parse_algebra();
 void test_move_count();
+void test_castling_move_generation();
 
 
 int main()
@@ -42,6 +43,8 @@ int main()
     test_src_pieces();
     test_parse_algebra();
     test_move_count();
+    test_castling_move_generation();
+    match_player(negamax_mover, random_mover);
     return 0;
 }
 
@@ -285,6 +288,22 @@ void test_fen_to_board()
         (uint64_t)0xFFFF000000000000,
         "bishops initialised correctly"
     );
+    assert_true(
+        testboard.castle_wks,
+        "White kingside castling is allowed"
+    );
+    assert_true(
+        testboard.castle_wqs,
+        "White queenside castling is allowed"
+    );
+    assert_true(
+        testboard.castle_bks,
+        "Black kingside castling is allowed"
+    );
+    assert_true(
+        testboard.castle_wqs,
+        "Black queenside castling is allowed"
+    );
     // print out the board for good measure
     print_board(testboard);
 }
@@ -324,6 +343,7 @@ void test_escape_check()
         "correctly determine our king can flee check"
     );
     testboard = fen_to_board(king_trapped);
+    print_board(testboard);
     assert_true(
         !can_escape_check(testboard),
         "correctly determine white is mated"
@@ -494,6 +514,30 @@ void test_move_count()
     assert_true(
         move_list_count(move_list) == 20,
         "20 opening moves are available"
+    );
+    move_list_delete(&move_list);
+}
+
+
+void test_castling_move_generation()
+{
+    // unrealistic position which would allow for castling
+    Bitboard testboard = fen_to_board(
+        "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQK2R w KQkq - 0 1"
+    );
+    print_board(testboard);
+    Move *move_list = NULL;
+    legal_moves_castling(&move_list, testboard);
+    assert_true(
+        move_list_count(move_list) == 1,
+        "1 castling move available"
+    );
+    // apply the move and check the results are as expected
+    apply_move(&testboard, *move_list);
+    assert_board_eq(
+        testboard.rooks,
+        sq_map(a8) | sq_map(h8) | sq_map(a1) | sq_map(f1),
+        "Kingside rook has moved"
     );
     move_list_delete(&move_list);
 }
