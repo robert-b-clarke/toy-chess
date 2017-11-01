@@ -44,7 +44,7 @@ int main()
     test_parse_algebra();
     test_move_count();
     test_castling_move_generation();
-    match_player(negamax_mover, random_mover);
+    // match_player(negamax_mover, random_mover);
     return 0;
 }
 
@@ -525,7 +525,6 @@ void test_castling_move_generation()
     Bitboard testboard = fen_to_board(
         "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQK2R w KQkq - 0 1"
     );
-    print_board(testboard);
     Move *move_list = NULL;
     legal_moves_castling(&move_list, testboard);
     assert_true(
@@ -540,4 +539,20 @@ void test_castling_move_generation()
         "Kingside rook has moved"
     );
     move_list_delete(&move_list);
+    // start again with white queenside
+    testboard = fen_to_board(
+        "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/R3KBNR w KQkq - 0 1"
+    );
+    move_list = NULL;
+    legal_moves_castling(&move_list, testboard);
+    assert_true(
+        move_list_count(move_list) == 1,
+        "1 castling move available"
+    );
+    apply_move(&testboard, *move_list);
+    assert_board_eq(
+        testboard.rooks,
+        sq_map(a8) | sq_map(h8) | sq_map(d1) | sq_map(h1),
+        "Kingside rook has moved"
+    );
 }

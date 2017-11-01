@@ -594,6 +594,13 @@ void legal_moves_castling(Move **move_list, Bitboard board)
             //printf("\n\n\nCAN PLAY KINGSIDE CASTLE\n\n\n");
             move_list_push(move_list, castle_ks);
         }
+        if(board.castle_wks && population_count(~occupied & wqs_squares)==3){
+            Move castle_qs = {};
+            castle_qs.dst = (uint64_t)0x2000000000000000;
+            castle_qs.src = (uint64_t)0x0800000000000000;
+            castle_qs.special = CASTLE_QS;
+            move_list_push(move_list, castle_qs);
+        }
     }
 
     return;
@@ -634,10 +641,17 @@ void apply_move(Bitboard *board_ref, const Move move) {
     int src_piece = remove_piece(board_ref, move.src);
     add_piece_to_board(board_ref, src_piece, move.dst);
     // check for castling
-    if(move.special & CASTLE_KS) {
+    if(move.special & CASTLE_KS && !board_ref->black_move) {
         // swap the rook over
-        int rook = remove_piece(board_ref, (uint64_t)0x0100000000000000);
-        add_piece_to_board(board_ref, rook, (uint64_t)0x0400000000000000);
+        add_piece_to_board(board_ref,
+            remove_piece(board_ref, (uint64_t)0x0100000000000000),
+            (uint64_t)0x0400000000000000
+        );
+    } else if(move.special & CASTLE_QS && !board_ref->black_move) {
+        add_piece_to_board(board_ref,
+            remove_piece(board_ref, (uint64_t)0x8000000000000000),
+            (uint64_t)0x1000000000000000
+        );
     }
     board_ref->black_move = !(board_ref->black_move);
 }

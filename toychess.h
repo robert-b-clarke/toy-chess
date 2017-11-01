@@ -9,8 +9,8 @@
 #define KING 6
 #define WHITE 8
 
-#define CASTLE_QS 1
 #define CASTLE_KS 1
+#define CASTLE_QS 2
 
 #define START_POS_FEN "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"
 
