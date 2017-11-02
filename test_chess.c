@@ -521,6 +521,7 @@ void test_move_count()
 
 void test_castling_move_generation()
 {
+    char *algebra;
     // unrealistic position which would allow for castling
     Bitboard testboard = fen_to_board(
         "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQK2R w KQkq - 0 1"
@@ -538,6 +539,13 @@ void test_castling_move_generation()
         sq_map(a8) | sq_map(h8) | sq_map(a1) | sq_map(f1),
         "Kingside rook has moved"
     );
+    // check algebra looks realistic
+    algebra = algebra_for_move(testboard, *move_list);
+    assert_true(
+        strcmp(algebra, "0-0") == 0,
+        "Correct algebra for castling"
+    );
+    free(algebra);
     move_list_delete(&move_list);
     // start again with white queenside
     testboard = fen_to_board(
@@ -555,4 +563,11 @@ void test_castling_move_generation()
         sq_map(a8) | sq_map(h8) | sq_map(d1) | sq_map(h1),
         "Kingside rook has moved"
     );
+    algebra = algebra_for_move(testboard, *move_list);
+    assert_true(
+        strcmp(algebra, "0-0-0") == 0,
+        "Correct algebra for castling"
+    );
+    free(algebra);
+    move_list_delete(&move_list);
 }

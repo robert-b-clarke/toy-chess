@@ -767,6 +767,18 @@ uint64_t src_pieces(Bitboard board, uint64_t target, int piece)
 
 char *algebra_for_move(Bitboard board, Move move)
 {
+    char *result;
+    // check if we're castling and avoid everything else
+    if(move.special & CASTLE_KS) {
+        result = malloc(4 * sizeof(char));
+        strcpy(result, "0-0");
+        return result;
+    }
+    if(move.special & CASTLE_QS) {
+        result = malloc(6 * sizeof(char));
+        strcpy(result, "0-0-0");
+        return result;
+    }
     int piece = piece_at_square(board, move.src);
     int file_neighbours; 
     int rank_neighbours; 
@@ -815,7 +827,7 @@ char *algebra_for_move(Bitboard board, Move move)
     }
     // copy target square onto the end of the string
     strcpy(c, SQUARE_NAMES[bitscan(move.dst)]);
-    char *result = malloc(strlen(algebra));
+    result = malloc(strlen(algebra) + 1);
     strcpy(result, algebra);
     // TODO - check
     return result;
