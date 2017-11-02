@@ -628,10 +628,12 @@ Move *legal_moves_for_board(Bitboard board) {
     legal_moves_for_piece(&move_list, board, BISHOP);
     legal_moves_for_piece(&move_list, board, KNIGHT);
     legal_moves_for_piece(&move_list, board, PAWN);
-    legal_moves_castling(&move_list, board);
 
     if(board.black_move)
         move_list_rotate(move_list);
+
+    // castling moves handled outside rotation
+    legal_moves_castling(&move_list, board);
     return move_list;
 }
 
