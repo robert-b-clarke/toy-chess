@@ -301,7 +301,7 @@ void test_fen_to_board()
         "Black kingside castling is allowed"
     );
     assert_true(
-        testboard.castle_wqs,
+        testboard.castle_bqs,
         "Black queenside castling is allowed"
     );
     // print out the board for good measure
@@ -530,7 +530,7 @@ void test_castling_move_generation()
     legal_moves_castling(&move_list, testboard);
     assert_true(
         move_list_count(move_list) == 1,
-        "1 castling move available"
+        "1 castling move available for white kingside"
     );
     // apply the move and check the results are as expected
     apply_move(&testboard, *move_list);
@@ -555,7 +555,7 @@ void test_castling_move_generation()
     legal_moves_castling(&move_list, testboard);
     assert_true(
         move_list_count(move_list) == 1,
-        "1 castling move available"
+        "1 castling move available for white queenside"
     );
     apply_move(&testboard, *move_list);
     assert_board_eq(
@@ -578,8 +578,22 @@ void test_castling_move_generation()
     legal_moves_castling(&move_list, testboard);
     assert_true(
         move_list_count(move_list) == 1,
-        "1 castling move available"
+        "1 castling move available for black kingside"
     );
     apply_move(&testboard, *move_list);
+    move_list_delete(&move_list);
+    // Repeat for black queenside
+    testboard = fen_to_board(
+        "r3kbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR b KQkq - 0 1"
+    );
+    move_list = NULL;
+    print_board(testboard);
+    legal_moves_castling(&move_list, testboard);
+    assert_true(
+        move_list_count(move_list) == 1,
+        "1 castling move available for black queenside"
+    );
+    apply_move(&testboard, *move_list);
+    print_board(testboard);
     move_list_delete(&move_list);
 }

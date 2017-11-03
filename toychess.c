@@ -389,7 +389,7 @@ Bitboard fen_to_board(const char *fen)
         if(*fen==0x6B)
             board.castle_bks = true;
         if(*fen==0x71)
-            board.castle_bks = true;
+            board.castle_bqs = true;
     } while(*fen++ != '\0' && !isspace(*fen));
 
     // Currently we throw away the remainder of the FEN string
@@ -589,10 +589,16 @@ void legal_moves_castling(Move **move_list, Bitboard board)
     uint64_t occupied = occupied_squares(board);
     Move castle = {}; // gets re-used, not ideal
     if(board.black_move) {
-        if(board.castle_wks && population_count(~occupied & bks_squares)==2){
-            castle.dst = (uint64_t)0x0800000000000000;
-            castle.src = (uint64_t)0x0200000000000000;
+        if(board.castle_bks && population_count(~occupied & bks_squares)==2){
+            castle.dst = (uint64_t)0x0000000000000002;
+            castle.src = (uint64_t)0x0000000000000008;
             castle.special = CASTLE_KS;
+            move_list_push(move_list, castle);
+        }
+        if(board.castle_bqs && population_count(~occupied & bqs_squares)==3){
+            castle.dst = (uint64_t)0x0000000000000020;
+            castle.src = (uint64_t)0x0000000000000008;
+            castle.special = CASTLE_QS;
             move_list_push(move_list, castle);
         }
     } else {
@@ -602,7 +608,7 @@ void legal_moves_castling(Move **move_list, Bitboard board)
             castle.special = CASTLE_KS;
             move_list_push(move_list, castle);
         }
-        if(board.castle_wks && population_count(~occupied & wqs_squares)==3){
+        if(board.castle_wqs && population_count(~occupied & wqs_squares)==3){
             castle.dst = (uint64_t)0x2000000000000000;
             castle.src = (uint64_t)0x0800000000000000;
             castle.special = CASTLE_QS;
@@ -650,7 +656,7 @@ void apply_move(Bitboard *board_ref, const Move move) {
     int src_piece = remove_piece(board_ref, move.src);
     add_piece_to_board(board_ref, src_piece, move.dst);
     // check for castling
-    if(move.special & CASTLE_KS) {
+    if(move.special == CASTLE_KS) {
         // swap the rook over
         if(board_ref->black_move) {
             add_piece_to_board(board_ref,
@@ -663,11 +669,18 @@ void apply_move(Bitboard *board_ref, const Move move) {
                 (uint64_t)0x0400000000000000
             );
         }
-    } else if(move.special & CASTLE_QS && !board_ref->black_move) {
-        add_piece_to_board(board_ref,
-            remove_piece(board_ref, (uint64_t)0x8000000000000000),
-            (uint64_t)0x1000000000000000
-        );
+    } else if(move.special == CASTLE_QS) {
+        if(board_ref->black_move) {
+            add_piece_to_board(board_ref,
+                remove_piece(board_ref, (uint64_t)0x0000000000000080),
+                (uint64_t)0x0000000000000010
+            );
+        } else {
+            add_piece_to_board(board_ref,
+                remove_piece(board_ref, (uint64_t)0x8000000000000000),
+                (uint64_t)0x1000000000000000
+            );
+        }
     }
     // clear castling flags if relevant pieces moved
     if(src_piece & KING) {
