@@ -655,6 +655,30 @@ void apply_move(Bitboard *board_ref, const Move move) {
             (uint64_t)0x1000000000000000
         );
     }
+    // clear castling flags if relevant pieces moved
+    if(src_piece & KING) {
+        if(board_ref->black_move) {
+            board_ref->castle_bks = false;
+            board_ref->castle_bqs = false;
+        } else {
+            board_ref->castle_wks = false;
+            board_ref->castle_wqs = false;
+        }
+    } else if (src_piece & ROOK) {
+        if(board_ref->black_move) {
+            if(move.src==(uint64_t)0x0000000000000008) {
+                board_ref->castle_bks = false;
+            } else {
+                board_ref->castle_bqs = false;
+            }
+        } else {
+            if(move.src==(uint64_t)0x1000000000000000) {
+                board_ref->castle_wqs = false;
+            } else {
+                board_ref->castle_wks = false;
+            }
+        }
+    }
     board_ref->black_move = !(board_ref->black_move);
 }
 
