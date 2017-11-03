@@ -570,4 +570,16 @@ void test_castling_move_generation()
     );
     free(algebra);
     move_list_delete(&move_list);
+    // Repeat for black kingside
+    testboard = fen_to_board(
+        "rnbqk2r/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR b KQkq - 0 1"
+    );
+    move_list = NULL;
+    legal_moves_castling(&move_list, testboard);
+    assert_true(
+        move_list_count(move_list) == 1,
+        "1 castling move available"
+    );
+    apply_move(&testboard, *move_list);
+    move_list_delete(&move_list);
 }

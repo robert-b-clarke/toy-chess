@@ -584,22 +584,29 @@ void legal_moves_castling(Move **move_list, Bitboard board)
 {
     static const uint64_t wks_squares = (uint64_t)0x0600000000000000;
     static const uint64_t wqs_squares = (uint64_t)0x7000000000000000;
-    if(!board.black_move) {
-        uint64_t occupied = occupied_squares(board);
+    static const uint64_t bks_squares = (uint64_t)0x0000000000000006;
+    static const uint64_t bqs_squares = (uint64_t)0x0000000000000070;
+    uint64_t occupied = occupied_squares(board);
+    Move castle = {}; // gets re-used, not ideal
+    if(board.black_move) {
+        if(board.castle_wks && population_count(~occupied & bks_squares)==2){
+            castle.dst = (uint64_t)0x0800000000000000;
+            castle.src = (uint64_t)0x0200000000000000;
+            castle.special = CASTLE_KS;
+            move_list_push(move_list, castle);
+        }
+    } else {
         if(board.castle_wks && population_count(~occupied & wks_squares)==2){
-            Move castle_ks = {};
-            castle_ks.dst = (uint64_t)0x0200000000000000;
-            castle_ks.src = (uint64_t)0x0800000000000000;
-            castle_ks.special = CASTLE_KS;
-            //printf("\n\n\nCAN PLAY KINGSIDE CASTLE\n\n\n");
-            move_list_push(move_list, castle_ks);
+            castle.dst = (uint64_t)0x0200000000000000;
+            castle.src = (uint64_t)0x0800000000000000;
+            castle.special = CASTLE_KS;
+            move_list_push(move_list, castle);
         }
         if(board.castle_wks && population_count(~occupied & wqs_squares)==3){
-            Move castle_qs = {};
-            castle_qs.dst = (uint64_t)0x2000000000000000;
-            castle_qs.src = (uint64_t)0x0800000000000000;
-            castle_qs.special = CASTLE_QS;
-            move_list_push(move_list, castle_qs);
+            castle.dst = (uint64_t)0x2000000000000000;
+            castle.src = (uint64_t)0x0800000000000000;
+            castle.special = CASTLE_QS;
+            move_list_push(move_list, castle);
         }
     }
 
@@ -643,12 +650,19 @@ void apply_move(Bitboard *board_ref, const Move move) {
     int src_piece = remove_piece(board_ref, move.src);
     add_piece_to_board(board_ref, src_piece, move.dst);
     // check for castling
-    if(move.special & CASTLE_KS && !board_ref->black_move) {
+    if(move.special & CASTLE_KS) {
         // swap the rook over
-        add_piece_to_board(board_ref,
-            remove_piece(board_ref, (uint64_t)0x0100000000000000),
-            (uint64_t)0x0400000000000000
-        );
+        if(board_ref->black_move) {
+            add_piece_to_board(board_ref,
+                remove_piece(board_ref, (uint64_t)0x0000000000000001),
+                (uint64_t)0x0000000000000004
+            );
+        } else {
+            add_piece_to_board(board_ref,
+                remove_piece(board_ref, (uint64_t)0x0100000000000000),
+                (uint64_t)0x0400000000000000
+            );
+        }
     } else if(move.special & CASTLE_QS && !board_ref->black_move) {
         add_piece_to_board(board_ref,
             remove_piece(board_ref, (uint64_t)0x8000000000000000),
