@@ -652,7 +652,7 @@ Move *legal_moves_for_board(Bitboard board) {
 
 
 void apply_move(Bitboard *board_ref, const Move move) {
-    remove_piece(board_ref, move.dst);
+    int target_piece = remove_piece(board_ref, move.dst);
     int src_piece = remove_piece(board_ref, move.src);
     add_piece_to_board(board_ref, src_piece, move.dst);
     // check for castling
@@ -705,6 +705,14 @@ void apply_move(Bitboard *board_ref, const Move move) {
                 board_ref->castle_wks = false;
             }
         }
+    }
+    // update move clocks
+    if(board_ref->black_move)
+        board_ref->fullmove_clock ++;
+    if(target_piece || src_piece & PAWN) {
+        board_ref->halfmove_clock = 0;
+    } else {
+        board_ref->halfmove_clock ++;
     }
     board_ref->black_move = !(board_ref->black_move);
 }
@@ -1036,7 +1044,7 @@ void match_player(MoveChoser player1, MoveChoser player2)
     Move next_move;
     printf("\n\n\nGame begins!\n\n");
     print_board(board);
-    while(halfmove < 1000) {
+    while(board.halfmove_clock <= 50) {
         if(board.black_move) {
             printf("> black move: ");
             next_move = player2(board);
@@ -1048,10 +1056,9 @@ void match_player(MoveChoser player1, MoveChoser player2)
         apply_move(&board, next_move);
         printf("\n%s\n", algebra);
         print_board(board);
-        halfmove ++;
         if(in_check(board)){
             if(!can_escape_check(board)) {
-                printf("\n\nCHECK MATE after %d moves\n", halfmove);
+                printf("\n\nCHECK MATE after %d moves\n", board.fullmove_clock);
                 exit(0);
             }
         }

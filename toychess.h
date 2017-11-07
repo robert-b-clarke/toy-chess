@@ -41,6 +41,9 @@ typedef struct {
     bool castle_wks;
     bool castle_bqs;
     bool castle_bks;
+    // move clocks
+    int halfmove_clock;
+    int fullmove_clock;
 } Bitboard;
 
 typedef struct move_item {
