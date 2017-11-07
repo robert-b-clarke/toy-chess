@@ -620,6 +620,27 @@ void legal_moves_castling(Move **move_list, Bitboard board)
 }
 
 
+void legal_moves_for_pawns(Move **move_list, Bitboard board)
+{
+    // get base moves
+    legal_moves_for_piece(move_list, board, PAWN);
+    // calculate en passant capture
+    if(board.enpassant) {
+        Move enpassant = {};
+        enpassant.dst = board.enpassant;
+        enpassant.special = ENPASSANT;
+        if(shift_nw(board.enpassant) & board.pawns & board.whites) {
+            enpassant.src = shift_nw(board.enpassant);
+            move_list_push(move_list, enpassant);
+        }
+        if(shift_ne(board.enpassant) & board.pawns & board.whites) {
+            enpassant.src = shift_ne(board.enpassant);
+            move_list_push(move_list, enpassant);
+        }
+    }
+}
+
+
 void move_list_rotate(Move *moves)
 {
     // rotate all dst and src values
@@ -640,7 +661,7 @@ Move *legal_moves_for_board(Bitboard board) {
     legal_moves_for_piece(&move_list, board, ROOK);
     legal_moves_for_piece(&move_list, board, BISHOP);
     legal_moves_for_piece(&move_list, board, KNIGHT);
-    legal_moves_for_piece(&move_list, board, PAWN);
+    legal_moves_for_pawns(&move_list, board);
 
     if(board.black_move)
         move_list_rotate(move_list);

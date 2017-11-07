@@ -9,8 +9,10 @@
 #define KING 6
 #define WHITE 8
 
+// special move bit field
 #define CASTLE_KS 1
 #define CASTLE_QS 2
+#define ENPASSANT 4
 
 #define START_POS_FEN "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"
 
@@ -44,6 +46,8 @@ typedef struct {
     // move clocks
     int halfmove_clock;
     int fullmove_clock;
+    // en passant target
+    uint64_t enpassant;
 } Bitboard;
 
 typedef struct move_item {
@@ -99,6 +103,7 @@ int move_list_count(Move *move_list);
 int move_list_delete(Move **move_list);
 void legal_moves(Move **move_list, Bitboard board, uint64_t origin, uint64_t targets);
 void legal_moves_for_piece(Move **move_list, Bitboard board, int piece);
+void legal_moves_for_pawns(Move **move_list, Bitboard board);
 void legal_moves_castling(Move **move_list, Bitboard board);
 void move_list_rotate(Move *moves);
 Move *legal_moves_for_board(Bitboard board);
