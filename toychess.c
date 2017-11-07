@@ -392,6 +392,16 @@ Bitboard fen_to_board(const char *fen)
             board.castle_bqs = true;
     } while(*fen++ != '\0' && !isspace(*fen));
 
+    // consume en-passant target square
+    if(!isspace(*fen))
+        return board;
+    fen++;
+    char enpassant_str[3];
+    if(sscanf(fen, "%2[abcdefgh12345678]", enpassant_str)) {
+        int idx = (enpassant_str[0] - 0x61) + ((enpassant_str[1] - 0x31) * 8);
+        board.enpassant = SQUARE_0 >> idx;
+    }
+
     // Currently we throw away the remainder of the FEN string
     // Future support can be added for castling, en-passant, game clock etc
     return board;

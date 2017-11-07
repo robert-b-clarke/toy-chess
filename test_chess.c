@@ -23,6 +23,7 @@ void test_src_pieces();
 void test_parse_algebra();
 void test_move_count();
 void test_castling_move_generation();
+void test_enpassant();
 
 
 int main()
@@ -44,7 +45,8 @@ int main()
     test_parse_algebra();
     test_move_count();
     test_castling_move_generation();
-    // match_player(negamax_mover, random_mover);
+    //match_player(negamax_mover, random_mover);
+    test_enpassant();
     return 0;
 }
 
@@ -596,4 +598,18 @@ void test_castling_move_generation()
     apply_move(&testboard, *move_list);
     print_board(testboard);
     move_list_delete(&move_list);
+}
+
+
+void test_enpassant() {
+    Bitboard testboard = fen_to_board(
+        "rnbqkbnr/1p1ppppp/p7/2pP4/8/8/PPP1PPPP/RNBQKBNR w KQkq c6 0 2"
+    );
+    print_board(testboard);
+    assert_board_eq(
+        testboard.enpassant,
+        sq_map(c6),
+        "Correctly parsed en-passant square"
+    );
+
 }
