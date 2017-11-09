@@ -628,6 +628,13 @@ void test_enpassant() {
         sq_map(d5),
         "generated move originates from D5"
     );
+    // test en-passant algebra looks OK
+    char *algebra = algebra_for_move(testboard, *move_ptr);
+    assert_true(
+        strcmp(algebra, "dxc6") == 0,
+        "En-Passant algebra correct"
+    );
+    free(algebra);
     // actually apply the move
     apply_move(&testboard, *move_ptr);
     // test we've blanked the opponents pawn

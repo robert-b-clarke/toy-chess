@@ -893,7 +893,9 @@ char *algebra_for_move(Bitboard board, Move move)
     char src_rank = 0;
     // work out if we're ambiguous
     uint64_t srcs = src_pieces(board, move.dst, piece);
-    if(population_count(srcs) > 1) {
+    if(move.special & ENPASSANT) {
+        src_file = SQUARE_NAMES[bitscan(move.src)][0];
+    } else if(population_count(srcs) > 1) {
         // disambig on file or on src
         file_neighbours = population_count(
             (sliding_attack(shift_n, move.src, EMPTY_BOARD, EMPTY_BOARD)
@@ -928,7 +930,7 @@ char *algebra_for_move(Bitboard board, Move move)
         *c = src_rank;
         c++;
     }
-    if(captures) {
+    if(captures || move.special & ENPASSANT) {
         *c = 'x';
         c++;
     }
