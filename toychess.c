@@ -743,6 +743,15 @@ void apply_move(Bitboard *board_ref, const Move move) {
     }
     // clear en-passant target - this is cleared after any move
     board_ref->enpassant = EMPTY_BOARD;
+    // check if move should set en_passant
+    if(src_piece & PAWN) {
+        int offset = bitscan(move.dst) - bitscan(move.src);
+        if(offset == 16) {
+            board_ref->enpassant = shift_s(move.dst);
+        } else if(offset == -16){
+            board_ref->enpassant = shift_n(move.dst);
+        }
+    }
     // update move clocks
     if(board_ref->black_move)
         board_ref->fullmove_clock ++;

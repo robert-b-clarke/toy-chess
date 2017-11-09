@@ -45,8 +45,8 @@ int main()
     test_parse_algebra();
     test_move_count();
     test_castling_move_generation();
-    //match_player(negamax_mover, random_mover);
     test_enpassant();
+    // match_player(negamax_mover, random_mover);
     return 0;
 }
 
@@ -642,5 +642,14 @@ void test_enpassant() {
         "En-passant target cleared"
     );
     move_list_delete(&move_list);
-
+    // test that enpassant square is actually set when it should be
+    Move double_push = {};
+    double_push.src = sq_map(g7);
+    double_push.dst = sq_map(g5);
+    apply_move(&testboard, double_push);
+    assert_board_eq(
+        testboard.enpassant,
+        sq_map(g6),
+        "Correctly set en-passant square"
+    );
 }
