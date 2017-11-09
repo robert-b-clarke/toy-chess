@@ -605,11 +605,42 @@ void test_enpassant() {
     Bitboard testboard = fen_to_board(
         "rnbqkbnr/1p1ppppp/p7/2pP4/8/8/PPP1PPPP/RNBQKBNR w KQkq c6 0 2"
     );
-    print_board(testboard);
     assert_board_eq(
         testboard.enpassant,
         sq_map(c6),
         "Correctly parsed en-passant square"
     );
+    // check that move generation includes enpassant
+    Move *move_list = legal_moves_for_board(testboard);
+    Move *move_ptr = move_list;
+    while(move_ptr != NULL) {
+        if(move_ptr->special & ENPASSANT)
+            break;
+        move_ptr = move_ptr->next;
+    }
+    assert_board_eq(
+        move_ptr->dst,
+        sq_map(c6),
+        "generated move targets C6"
+    );
+    assert_board_eq(
+        move_ptr->src,
+        sq_map(d5),
+        "generated move originates from D5"
+    );
+    // actually apply the move
+    apply_move(&testboard, *move_ptr);
+    // test we've blanked the opponents pawn
+    assert_board_eq(
+        testboard.pawns & sq_map(d6),
+        EMPTY_BOARD,
+        "Black pawn removed in enpassant capture"
+    );
+    // test that enpassant target is cleared
+    assert_true(
+        testboard.enpassant==EMPTY_BOARD,
+        "En-passant target cleared"
+    );
+    move_list_delete(&move_list);
 
 }

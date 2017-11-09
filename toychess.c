@@ -640,12 +640,12 @@ void legal_moves_for_pawns(Move **move_list, Bitboard board)
         Move enpassant = {};
         enpassant.dst = board.enpassant;
         enpassant.special = ENPASSANT;
-        if(shift_nw(board.enpassant) & board.pawns & board.whites) {
-            enpassant.src = shift_nw(board.enpassant);
+        if(shift_sw(board.enpassant) & board.pawns & board.whites) {
+            enpassant.src = shift_sw(board.enpassant);
             move_list_push(move_list, enpassant);
         }
-        if(shift_ne(board.enpassant) & board.pawns & board.whites) {
-            enpassant.src = shift_ne(board.enpassant);
+        if(shift_se(board.enpassant) & board.pawns & board.whites) {
+            enpassant.src = shift_se(board.enpassant);
             move_list_push(move_list, enpassant);
         }
     }
@@ -713,6 +713,9 @@ void apply_move(Bitboard *board_ref, const Move move) {
                 (uint64_t)0x1000000000000000
             );
         }
+    } else if(move.special == ENPASSANT) {
+        // en-passant capture so remove trailing piece if there is one
+        remove_piece(board_ref, shift_s(move.dst));
     }
     // clear castling flags if relevant pieces moved
     if(src_piece & KING) {
@@ -738,6 +741,8 @@ void apply_move(Bitboard *board_ref, const Move move) {
             }
         }
     }
+    // clear en-passant target - this is cleared after any move
+    board_ref->enpassant = EMPTY_BOARD;
     // update move clocks
     if(board_ref->black_move)
         board_ref->fullmove_clock ++;
