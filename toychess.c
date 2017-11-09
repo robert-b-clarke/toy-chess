@@ -102,6 +102,7 @@ void rotate_board_180(Bitboard *board)
     board->kings = rotate_180(board->kings);
     board->queens = rotate_180(board->queens);
     board->whites = rotate_180(board->whites);
+    board->enpassant = rotate_180(board->enpassant);
 }
 
 
