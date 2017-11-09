@@ -8,8 +8,8 @@ Progress ground to a halt several months back, due to a complete lack of spare t
 
 A lot of things:
 
-* En-passant, castling and pawn promotion
-* Algebra support for check, checkmate and special moves
+* ~~En-passant, castling~~ and pawn promotion
+* Algebra support for check, checkmate and special pawn moves
 * Human player using algebra interpreter
 * Benchmarking (tracepoints, memory profiling etc)
 * optimisation (Alpha beta pruning, faster evalutation, reduce rotation of board)
