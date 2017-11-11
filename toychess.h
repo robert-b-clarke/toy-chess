@@ -13,6 +13,11 @@
 #define CASTLE_KS 1
 #define CASTLE_QS 2
 #define ENPASSANT 4
+#define PROMOTE_QUEEN 8
+#define PROMOTE_ROOK 16
+#define PROMOTE_KNIGHT 32
+#define PROMOTE_BISHOP 64
+#define PROMOTE 120
 
 #define START_POS_FEN "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"
 

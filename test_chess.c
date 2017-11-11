@@ -24,6 +24,7 @@ void test_parse_algebra();
 void test_move_count();
 void test_castling_move_generation();
 void test_enpassant();
+void test_pawn_promotion();
 
 
 int main()
@@ -46,6 +47,7 @@ int main()
     test_move_count();
     test_castling_move_generation();
     test_enpassant();
+    test_pawn_promotion();
     // match_player(negamax_mover, random_mover);
     return 0;
 }
@@ -658,5 +660,34 @@ void test_enpassant() {
         testboard.enpassant,
         sq_map(g6),
         "Correctly set en-passant square"
+    );
+}
+
+
+void test_pawn_promotion()
+{
+    Bitboard testboard = fen_to_board("1r6/P6k/8/8/8/8/8/7K");
+    Move *move_list = NULL;
+    legal_moves_for_pawns(&move_list, testboard);
+    assert_true(
+        move_list_count(move_list)==10,
+        "10 moves available"
+    );
+    move_list_delete(&move_list);
+    char *algebra;
+    Move queen_promote = {};
+    queen_promote.src = sq_map(a7);
+    queen_promote.dst = sq_map(b8);
+    queen_promote.special = PROMOTE_QUEEN;
+    algebra = algebra_for_move(testboard, queen_promote);
+    assert_true(
+        strcmp(algebra, "xb8=Q")==0,
+        "Correct algebra for capture promoted to QUEEN"
+    );
+    free(algebra);
+    apply_move(&testboard, queen_promote);
+    assert_true(
+        piece_at_square(testboard, sq_map(b8)) == WHITE | QUEEN,
+        "pawn promoted to white queen"
     );
 }

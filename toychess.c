@@ -649,6 +649,24 @@ void legal_moves_for_pawns(Move **move_list, Bitboard board)
             move_list_push(move_list, enpassant);
         }
     }
+    // look for pawn promotion opportunities
+    // TODO - this is a bit inefficient
+    Move *move_ptr = *move_list;
+    Move promotion = {};
+    while(move_ptr != NULL) {
+        if(move_ptr->dst & RANK_8) {
+            promotion = *move_ptr;
+            promotion.special = PROMOTE_QUEEN;
+            move_list_push(move_list, promotion);
+            promotion.special = PROMOTE_ROOK;
+            move_list_push(move_list, promotion);
+            promotion.special = PROMOTE_KNIGHT;
+            move_list_push(move_list, promotion);
+            promotion.special = PROMOTE_BISHOP;
+            move_list_push(move_list, promotion);
+        }
+        move_ptr = move_ptr->next;
+    }
 }
 
 
@@ -686,6 +704,18 @@ Move *legal_moves_for_board(Bitboard board) {
 void apply_move(Bitboard *board_ref, const Move move) {
     int target_piece = remove_piece(board_ref, move.dst);
     int src_piece = remove_piece(board_ref, move.src);
+    if(move.special & PROMOTE) {
+        src_piece ^= PAWN;
+        if(move.special == PROMOTE_QUEEN) {
+            src_piece |= QUEEN;
+        } else if(move.special == PROMOTE_ROOK) {
+            src_piece |= ROOK;
+        } else if(move.special == PROMOTE_KNIGHT) {
+            src_piece |= KNIGHT;
+        } else if(move.special == PROMOTE_BISHOP) {
+            src_piece |= BISHOP;
+        }
+    }
     add_piece_to_board(board_ref, src_piece, move.dst);
     // check for castling
     if(move.special == CASTLE_KS) {
@@ -936,6 +966,16 @@ char *algebra_for_move(Bitboard board, Move move)
     }
     // copy target square onto the end of the string
     strcpy(c, SQUARE_NAMES[bitscan(move.dst)]);
+    if(move.special & PROMOTE_QUEEN) {
+        strcat(algebra, "=Q");
+    } else if(move.special & PROMOTE_KNIGHT) {
+        strcat(algebra, "=N");
+    } else if(move.special & PROMOTE_BISHOP) {
+        strcat(algebra, "=B");
+    } else if(move.special & PROMOTE_ROOK) {
+        strcat(algebra, "=R");
+    }
+
     result = malloc(strlen(algebra) + 1);
     strcpy(result, algebra);
     // TODO - check
