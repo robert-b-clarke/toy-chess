@@ -48,7 +48,7 @@ int main()
     test_castling_move_generation();
     test_enpassant();
     test_pawn_promotion();
-    // match_player(negamax_mover, random_mover);
+    match_player(human_mover, negamax_mover);
     return 0;
 }
 

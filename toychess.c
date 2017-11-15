@@ -748,7 +748,7 @@ void apply_move(Bitboard *board_ref, const Move move) {
         remove_piece(board_ref, shift_s(move.dst));
     }
     // clear castling flags if relevant pieces moved
-    if(src_piece & KING) {
+    if((src_piece & 7) == KING) {
         if(board_ref->black_move) {
             board_ref->castle_bks = false;
             board_ref->castle_bqs = false;
@@ -756,7 +756,7 @@ void apply_move(Bitboard *board_ref, const Move move) {
             board_ref->castle_wks = false;
             board_ref->castle_wqs = false;
         }
-    } else if (src_piece & ROOK) {
+    } else if ((src_piece & 7) == ROOK) {
         if(board_ref->black_move) {
             if(move.src==(uint64_t)0x0000000000000008) {
                 board_ref->castle_bks = false;
@@ -1001,6 +1001,7 @@ Move parse_algebra(Bitboard board, const char *algebra)
         if(strcmp(algebra, algebra_scan) == 0) {
             result.dst = legal_move->dst;
             result.src = legal_move->src;
+            result.special = legal_move->special;
             free(algebra_scan);
             return result;
         }
@@ -1120,6 +1121,44 @@ Move negamax_mover(Bitboard board)
         move_list = move_list->next;
     }
     move_list_delete(&move_list);
+    return result;
+}
+
+
+Move human_mover(Bitboard board)
+{
+    char inbuff[20];
+    char algebra[20];
+    char *help_buffer;
+    int idx;
+    Move result = {};
+    while(result.dst == EMPTY_BOARD) {
+        printf("\nEnter your move > ");
+        fgets(inbuff, 20, stdin);
+        if(strcmp(inbuff, "help\n") == 0) {
+            // give the player a hand and list available moves
+            Move *move_list = legal_moves_for_board(board);
+            idx = 1;
+            while(move_list != NULL) {
+                help_buffer = algebra_for_move(board, *move_list);
+                printf("%s", help_buffer);
+                if(idx % 5 == 0) {
+                    printf("\n");
+                } else {
+                    printf("\t");
+                }
+                free(help_buffer);
+                move_list = move_list->next;
+                idx ++;
+            }
+            printf("\n\n");
+            print_board(board);
+        } else {
+            strncpy(algebra, inbuff, strlen(inbuff) - 1);
+            algebra[(int)strlen(inbuff) - 1] = 0;
+            result = parse_algebra(board, algebra);
+        }
+    }
     return result;
 }
 
