@@ -13,6 +13,7 @@ void test_pawn_attacks();
 void test_pawn_moves();
 void test_queen_collisions();
 void test_rotate_180();
+void test_upside_down();
 void test_rotate_board();
 void test_delete_ls1b();
 void test_bitscan();
@@ -36,6 +37,7 @@ int main()
     test_pawn_moves();
     test_pawn_attacks();
     test_rotate_180();
+    test_upside_down();
     test_rotate_board();
     test_delete_ls1b();
     test_bitscan();
@@ -48,7 +50,7 @@ int main()
     test_castling_move_generation();
     test_enpassant();
     test_pawn_promotion();
-    match_player(human_mover, negamax_mover);
+    match_player(negamax_mover, human_mover);
     return 0;
 }
 
@@ -177,6 +179,19 @@ void test_rotate_180()
         "A8 has moved to H1"
     );
 }
+
+void test_upside_down()
+{
+    Bitboard board = {};
+    board.rooks = upside_down(sq_map(a8));
+    print_board(board);
+    assert_board_eq(
+        upside_down(sq_map(a8)),
+        sq_map(a1),
+        "A8 has moved to A1"
+    );
+}
+
 
 
 void test_rotate_board()

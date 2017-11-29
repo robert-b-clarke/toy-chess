@@ -84,6 +84,7 @@ uint64_t shift_sw( uint64_t bitlayer );
 uint64_t shift_e( uint64_t bitlayer );
 uint64_t shift_w( uint64_t bitlayer );
 uint64_t rotate_180( uint64_t bitlayer );
+uint64_t upside_down( uint64_t bitlayer );
 uint64_t pawn_moves(uint64_t rooks, uint64_t enemies, uint64_t allies);
 uint64_t rook_attacks(uint64_t rooks, uint64_t enemies, uint64_t allies);
 uint64_t bishop_attacks(uint64_t bishops, uint64_t enemies, uint64_t allies);

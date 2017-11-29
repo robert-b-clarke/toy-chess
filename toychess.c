@@ -106,9 +106,23 @@ void rotate_board_180(Bitboard *board)
 }
 
 
+void upside_down_board(Bitboard *board)
+{
+    /*rotate the entire board 180 degrees*/
+    board->pawns = upside_down(board->pawns);
+    board->rooks = upside_down(board->rooks);
+    board->knights = upside_down(board->knights);
+    board->bishops = upside_down(board->bishops);
+    board->kings = upside_down(board->kings);
+    board->queens = upside_down(board->queens);
+    board->whites = upside_down(board->whites);
+    board->enpassant = upside_down(board->enpassant);
+}
+
+
 Bitboard enemy_board(Bitboard board)
 {
-    rotate_board_180(&board);
+    upside_down_board(&board);
     board.whites = ~board.whites;
     return board;
 }
@@ -316,6 +330,15 @@ uint64_t rotate_180( uint64_t bitlayer )
         bits_left --;
     }
     return reversed << bits_left;
+}
+
+
+uint64_t upside_down(uint64_t b)
+{
+    b = ((b & 0xFFFFFFFF00000000) >> 32) | ((b & 0x00000000FFFFFFFF) << 32);
+    b = ((b & 0xFFFF0000FFFF0000) >> 16) | ((b & 0x0000FFFF0000FFFF) << 16);
+    b = ((b & 0xFF00FF00FF00FF00) >> 8) | ((b & 0x00FF00FF00FF00FF) << 8);
+    return b;
 }
 
 
@@ -674,8 +697,8 @@ void move_list_rotate(Move *moves)
 {
     // rotate all dst and src values
     while(moves != NULL) {
-        moves->src = rotate_180(moves->src);
-        moves->dst = rotate_180(moves->dst);
+        moves->src = upside_down(moves->src);
+        moves->dst = upside_down(moves->dst);
         moves = moves->next;
     }
 }
@@ -696,7 +719,7 @@ Move *legal_moves_for_board(Bitboard board) {
         move_list_rotate(move_list);
 
     // castling moves handled outside rotation
-    legal_moves_castling(&move_list, board);
+    legal_moves_castling(&move_list, enemy_board(board));
     return move_list;
 }
 
@@ -878,7 +901,7 @@ uint64_t src_pieces(Bitboard board, uint64_t target, int piece)
     if(board.black_move) {
         // reverse the board and adjust the target
         board = enemy_board(board);
-        target = rotate_180(target);
+        target = upside_down(target);
     }
     uint64_t allies = occupied_squares(board) & board.whites;
     uint64_t enemies = occupied_squares(board) & ~board.whites;
@@ -897,7 +920,7 @@ uint64_t src_pieces(Bitboard board, uint64_t target, int piece)
         }
     }
     if(board.black_move) {
-        return rotate_180(srcs);
+        return upside_down(srcs);
     }
     return srcs;
 }
