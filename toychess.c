@@ -616,38 +616,25 @@ void legal_moves_for_piece(Move **move_list, Bitboard board, int piece)
 
 void legal_moves_castling(Move **move_list, Bitboard board)
 {
-    static const uint64_t wks_squares = (uint64_t)0x0600000000000000;
-    static const uint64_t wqs_squares = (uint64_t)0x7000000000000000;
-    static const uint64_t bks_squares = (uint64_t)0x0000000000000006;
-    static const uint64_t bqs_squares = (uint64_t)0x0000000000000070;
+    static const uint64_t ks_squares = (uint64_t)0x0600000000000000;
+    static const uint64_t qs_squares = (uint64_t)0x7000000000000000;
     uint64_t occupied = occupied_squares(board);
     Move castle = {}; // gets re-used, not ideal
-    if(board.black_move) {
-        if(board.castle_bks && population_count(~occupied & bks_squares)==2){
-            castle.dst = (uint64_t)0x0000000000000002;
-            castle.src = (uint64_t)0x0000000000000008;
-            castle.special = CASTLE_KS;
-            move_list_push(move_list, castle);
-        }
-        if(board.castle_bqs && population_count(~occupied & bqs_squares)==3){
-            castle.dst = (uint64_t)0x0000000000000020;
-            castle.src = (uint64_t)0x0000000000000008;
-            castle.special = CASTLE_QS;
-            move_list_push(move_list, castle);
-        }
-    } else {
-        if(board.castle_wks && population_count(~occupied & wks_squares)==2){
-            castle.dst = (uint64_t)0x0200000000000000;
-            castle.src = (uint64_t)0x0800000000000000;
-            castle.special = CASTLE_KS;
-            move_list_push(move_list, castle);
-        }
-        if(board.castle_wqs && population_count(~occupied & wqs_squares)==3){
-            castle.dst = (uint64_t)0x2000000000000000;
-            castle.src = (uint64_t)0x0800000000000000;
-            castle.special = CASTLE_QS;
-            move_list_push(move_list, castle);
-        }
+
+    bool castle_ks = board.black_move ? board.castle_bks : board.castle_wks;
+    bool castle_qs = board.black_move ? board.castle_bqs : board.castle_wqs;
+
+    if(castle_ks && population_count(~occupied & ks_squares)==2){
+        castle.dst = (uint64_t)0x0200000000000000;
+        castle.src = (uint64_t)0x0800000000000000;
+        castle.special = CASTLE_KS;
+        move_list_push(move_list, castle);
+    }
+    if(castle_qs && population_count(~occupied & qs_squares)==3){
+        castle.dst = (uint64_t)0x2000000000000000;
+        castle.src = (uint64_t)0x0800000000000000;
+        castle.special = CASTLE_QS;
+        move_list_push(move_list, castle);
     }
 
     return;
@@ -714,12 +701,12 @@ Move *legal_moves_for_board(Bitboard board) {
     legal_moves_for_piece(&move_list, board, BISHOP);
     legal_moves_for_piece(&move_list, board, KNIGHT);
     legal_moves_for_pawns(&move_list, board);
+    legal_moves_castling(&move_list, board);
 
     if(board.black_move)
         move_list_rotate(move_list);
 
     // castling moves handled outside rotation
-    legal_moves_castling(&move_list, enemy_board(board));
     return move_list;
 }
 
