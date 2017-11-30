@@ -12,9 +12,7 @@ void test_knight_attacks();
 void test_pawn_attacks();
 void test_pawn_moves();
 void test_queen_collisions();
-void test_rotate_180();
 void test_upside_down();
-void test_rotate_board();
 void test_delete_ls1b();
 void test_bitscan();
 void test_fen_to_board();
@@ -36,9 +34,7 @@ int main()
     test_queen_collisions();
     test_pawn_moves();
     test_pawn_attacks();
-    test_rotate_180();
     test_upside_down();
-    test_rotate_board();
     test_delete_ls1b();
     test_bitscan();
     test_fen_to_board();
@@ -171,15 +167,6 @@ void test_queen_collisions()
 }
 
 
-void test_rotate_180()
-{
-    assert_board_eq(
-        rotate_180(sq_map(a8)),
-        sq_map(h1),
-        "A8 has moved to H1"
-    );
-}
-
 void test_upside_down()
 {
     Bitboard board = {};
@@ -189,28 +176,6 @@ void test_upside_down()
         upside_down(sq_map(a8)),
         sq_map(a1),
         "A8 has moved to A1"
-    );
-}
-
-
-
-void test_rotate_board()
-{
-    /* rotate an entire board 180 degrees */
-    Bitboard testboard = fen_to_board(START_POS_FEN);
-    rotate_board_180(&testboard);
-    /* white queen should have moved to E8 */
-    assert_board_eq(
-        testboard.queens & testboard.whites,
-        sq_map(e8),
-        "White queen has moved to e8"
-    );
-    /* rotate the board back */
-    rotate_board_180(&testboard);
-    assert_board_eq(
-        testboard.queens & testboard.whites,
-        sq_map(d1),
-        "White queen has moved back to d1"
     );
 }
 

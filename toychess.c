@@ -92,20 +92,6 @@ char piece_letter(int piece)
 }
 
 
-void rotate_board_180(Bitboard *board)
-{
-    /*rotate the entire board 180 degrees*/
-    board->pawns = rotate_180(board->pawns);
-    board->rooks = rotate_180(board->rooks);
-    board->knights = rotate_180(board->knights);
-    board->bishops = rotate_180(board->bishops);
-    board->kings = rotate_180(board->kings);
-    board->queens = rotate_180(board->queens);
-    board->whites = rotate_180(board->whites);
-    board->enpassant = rotate_180(board->enpassant);
-}
-
-
 void upside_down_board(Bitboard *board)
 {
     /*rotate the entire board 180 degrees*/
@@ -313,23 +299,6 @@ uint64_t shift_sw( uint64_t bitlayer )
 uint64_t shift_w( uint64_t bitlayer )
 {
     return (bitlayer & ~FILE_H) >> 1;
-}
-
-
-uint64_t rotate_180( uint64_t bitlayer )
-{
-    /* Adapted from
-     * https://graphics.stanford.edu/~seander/bithacks.html#BitReverseObvious
-     */
-    uint64_t reversed = bitlayer;
-    uint64_t lsb = (uint64_t)0x01; /* cast to uint64 */
-    uint8_t bits_left = 63;
-    for (bitlayer >>= 1; bitlayer; bitlayer >>= 1) {
-        reversed <<= 1;
-        reversed |= bitlayer & lsb;
-        bits_left --;
-    }
-    return reversed << bits_left;
 }
 
 
