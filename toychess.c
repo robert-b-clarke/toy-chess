@@ -11,18 +11,17 @@
 #define UNUSED(x) (void)(x)
 
 /* const bitmasks for bitboard */
-const uint64_t FILE_A = (uint64_t)0x8080808080808080;
-const uint64_t FILE_H = (uint64_t)0x0101010101010101;
-const uint64_t FILE_AB = (uint64_t)0xC0C0C0C0C0C0C0C0;
-const uint64_t FILE_GH = (uint64_t)0x0303030303030303;
-const uint64_t RANK_8 = (uint64_t)0x00000000000000FF;
-const uint64_t RANK_2 = (uint64_t)0x00FF000000000000;
-const uint64_t RANK_1 = (uint64_t)0xFF00000000000000;
-const uint64_t LOWEST_SQUARE = (uint64_t)0x0000000000000001;
-const uint64_t SQUARE_0 = (uint64_t)0x8000000000000000;
-const uint64_t EMPTY_BOARD = (uint64_t)0x0000000000000000;
-const uint64_t FULL_BOARD = (uint64_t)0xFFFFFFFFFFFFFFFF;
-const uint64_t WHITE_SQUARES = (uint64_t)0x55AA55AA55AA55AA;
+static const uint64_t FILE_A = (uint64_t)0x8080808080808080;
+static const uint64_t FILE_H = (uint64_t)0x0101010101010101;
+static const uint64_t FILE_AB = (uint64_t)0xC0C0C0C0C0C0C0C0;
+static const uint64_t FILE_GH = (uint64_t)0x0303030303030303;
+static const uint64_t RANK_8 = (uint64_t)0x00000000000000FF;
+static const uint64_t RANK_2 = (uint64_t)0x00FF000000000000;
+static const uint64_t RANK_1 = (uint64_t)0xFF00000000000000;
+static const uint64_t LOWEST_SQUARE = (uint64_t)0x0000000000000001;
+static const uint64_t SQUARE_0 = (uint64_t)0x8000000000000000;
+static const uint64_t EMPTY_BOARD = (uint64_t)0x0000000000000000;
+static const uint64_t WHITE_SQUARES = (uint64_t)0x55AA55AA55AA55AA;
 
 const char  *SQUARE_NAMES[] = {
     "a1", "b1", "c1", "d1", "e1", "f1", "g1", "h1",
