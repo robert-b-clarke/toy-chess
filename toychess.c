@@ -114,10 +114,10 @@ Bitboard enemy_board(Bitboard board)
 
 int population_count(uint64_t bitlayer)
 {
-    /* count the set bits */
+    // Count the set bits, this method OK for sparsely populated bitmaps
     int c;
-    for (c = 0; bitlayer; bitlayer >>= 1) {
-        c += bitlayer & LOWEST_SQUARE;
+    for (c = 0; bitlayer; bitlayer &= (bitlayer - 1)) {
+        c ++;
     }
     return c;
 }
